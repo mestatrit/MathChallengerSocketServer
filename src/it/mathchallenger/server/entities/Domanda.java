@@ -76,4 +76,13 @@ public class Domanda {
 	public void setNumeroDomanda(int n){
 		numero_domanda=n;
 	}
+	public boolean isRispostaEsatta(float f){
+		return Float.compare(f, risposta_esatta)==0;
+	}
+	public int getUser1Risposto(){
+		return user_1_risposto;
+	}
+	public int getUser2Risposto(){
+		return user_2_risposto;
+	}
 }

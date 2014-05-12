@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Partita {
 	private int id_partita;
-	private int id_utente_1, id_utente_2;
+	private Integer id_utente_1, id_utente_2;
 	private int stato_partita;
 	private long inizio, fine;
 	private final static long DURATA_MASSIMA_PARTITA=172800000L;  //2 giorni
@@ -28,10 +28,10 @@ public class Partita {
 	public int getIDUtente1(){
 		return id_utente_1;
 	}
-	public void setIDUtente2(int id){
+	public void setIDUtente2(Integer id){
 		id_utente_2=id;
 	}
-	public int getIDUtente2(){
+	public Integer getIDUtente2(){
 		return id_utente_2;
 	}
 	public void setIDPartita(int id){
@@ -96,5 +96,22 @@ public class Partita {
 			str+="Risposta 4: "+d.getRispostaErrata(3)+"\n\n";
 		}
 		return str;
+	}
+	public boolean hasUtente1Risposto(){
+		for(int i=0;i<domande.size();i++){
+			if(!domande.get(i).isUser1Risposto())
+				return false;
+		}
+		return true;
+	}
+	public boolean hasUtente2Risposto(){
+		for(int i=0;i<domande.size();i++){
+			if(!domande.get(i).isUser2Risposto())
+				return false;
+		}
+		return true;
+	}
+	public int getNumeroDomande(){
+		return domande.size();
 	}
 }

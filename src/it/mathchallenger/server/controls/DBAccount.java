@@ -306,24 +306,8 @@ public class DBAccount {
 	private String generaRandomPass(){
 		return generaAuthCode(PASSWORD_SIZE);
 	}
-	/*
-	public boolean resetPasswordByEmail(String email){
-		Account acc=getAccountByEmail(email);
-		if(acc!=null){
-			String pass=generaRandomPass();
-			String pass_hash=generaHash(pass);
-			if(salvaPassword(acc.getID(), pass_hash)){
-				//TODO invio email
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-		return false;
-	}
-	*/
-	private Account getAccountByID(int id){
+
+	public Account getAccountByID(int id){
 		Connection con=null;
 		PreparedStatement st=null;
 		ResultSet rs=null;
@@ -358,14 +342,14 @@ public class DBAccount {
 		}
 		return acc;
 	}
-	public ArrayList<Account> searchUser(String user){
+	public ArrayList<Account> searchUser(Account account_cercante, String user){
 		Connection con=null;
 		PreparedStatement st=null;
 		ResultSet rs=null;
 		ArrayList<Account> acc=new ArrayList<Account>();
 		try {
 			con=DBConnectionPool.getConnection();
-			String query="SELECT * FROM account WHERE username LIKE \"%"+user+"%\" ORDER BY CASE WHEN username LIKE \""+user+"%\" THEN 1 WHEN username LIKE \"%"+user+"\" THEN 3 ELSE 2 END";
+			String query="SELECT * FROM account WHERE username LIKE \"%"+user+"%\" AND id>0 AND id!="+account_cercante.getID()+" ORDER BY CASE WHEN username LIKE \""+user+"%\" THEN 1 WHEN username LIKE \"%"+user+"\" THEN 3 ELSE 2 END";
 			st=con.prepareStatement(query);
 			rs=st.executeQuery();
 			while(rs.next()){
@@ -532,5 +516,91 @@ public class DBAccount {
 			return false;
 		else
 			return true;
+	}
+	public boolean addFriend(Account user, int id_amico){
+		Connection con=null;
+		PreparedStatement st=null;
+		try {
+			con=DBConnectionPool.getConnection();
+			String query="INSERT INTO amico (id_utente, id_amico) VALUES("+user.getID()+","+id_amico+")";
+			st=con.prepareStatement(query);
+			st.executeUpdate();
+			return true;
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if(st!=null)
+					st.close();
+				if(con!=null)
+					DBConnectionPool.releaseConnection(con);
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return true;
+	}
+	public boolean removeFriend(Account user, int id_amico){
+		Connection con=null;
+		PreparedStatement st=null;
+		try {
+			con=DBConnectionPool.getConnection();
+			String query="DELETE FROM amico WHERE id_utente="+user.getID()+" AND id_amico="+id_amico;
+			st=con.prepareStatement(query);
+			st.executeUpdate();
+			return true;
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if(st!=null)
+					st.close();
+				if(con!=null)
+					DBConnectionPool.releaseConnection(con);
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return true;
+	}
+	public ArrayList<Account> getListaAmici(Account acc){
+		ArrayList<Account> amici=new ArrayList<Account>();
+		Connection con=null;
+		ResultSet rs=null;
+		PreparedStatement st=null;
+		try {
+			con=DBConnectionPool.getConnection();
+			String query="SELECT * FROM amico WHERE id_utente="+acc.getID();
+			st=con.prepareStatement(query);
+			rs=st.executeQuery();
+			while(rs.next()){
+				int id_amico=rs.getInt("id_amico");
+				Account a=getAccountByID(id_amico);
+				amici.add(a);
+			}
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if(rs!=null)
+					rs.close();
+				if(st!=null)
+					st.close();
+				if(con!=null)
+					DBConnectionPool.releaseConnection(con);
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return amici;
 	}
 }
