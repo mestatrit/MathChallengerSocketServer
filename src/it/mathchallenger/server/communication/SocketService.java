@@ -250,7 +250,7 @@ public class SocketService implements Runnable {
 									OutputWrite("newgame-random=error;message=You must be logged in");
 									break;
 								}
-								Account acc_sfidante=GestionePartite.getInstance().accountRandom();
+								Account acc_sfidante=GestionePartite.getInstance().accountRandom(account.getID());
 								int id_s=acc_sfidante.getID();
 								Partita p=DBPartita.getInstance().creaPartita(account.getID(), id_s<0?0:id_s);
 								OutputWrite("newgame-random=OK;id="+p.getIDPartita());
