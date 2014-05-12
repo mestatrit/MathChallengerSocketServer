@@ -361,6 +361,10 @@ public class SocketService implements Runnable {
 									break;
 								}
 								int idAmico=Integer.parseInt(cmd[1]);
+								if(idAmico==0 || idAmico==account.getID()){
+									OutputWrite("addfriend=error;message=You can't add this account to friends");
+									break;
+								}
 								DBAccount.getInstance().addFriend(account, idAmico);
 								OutputWrite("addfriend=OK");
 							}

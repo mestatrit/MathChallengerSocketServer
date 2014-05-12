@@ -11,6 +11,7 @@ public class SocketServer {
 	public static ThreadGroup thread_utenti_attivi=new ThreadGroup("t_utenti_attivi");
 	public static void main(String[] args) throws IOException {
 		try {
+			System.out.println("Avvio il collegamento con il database...");
 			DBConnectionPool.init();
 			Runtime.getRuntime().addShutdownHook(new Thread(){
 				public void run(){
@@ -24,13 +25,30 @@ public class SocketServer {
 			});
 		} 
 		catch (ClassNotFoundException | SQLException e1) {
-			System.out.println("Database connection error");
+			System.out.println("Collegamento con il database fallito...");
 			System.exit(0);
 		}
-		MailSender.init();
+		Thread threadMail = new Thread(new Runnable(){
+			@Override
+			public void run() {
+				System.out.println("Avvio il controller per inviare le email...");
+				try {
+					MailSender.init();
+				}
+				catch (IOException e) {
+					System.out.println("Avvio controller per inviare le email fallito...");
+					System.exit(0);
+					e.printStackTrace();
+				}
+			}
+		});
+		threadMail.start();
+		
+		System.out.println("Tentativo di mettersi in ascolto per ricevere connessioni in arrivo...");
 		ServerSocket server = null;
 		try {
 			server=new ServerSocket(50000);
+			System.out.println("In ascolto in attesa di connessioni...");
 			while(true){
 				Socket socket=server.accept();
 				Thread t=new Thread(thread_utenti_attivi, new SocketService(socket));
@@ -38,10 +56,13 @@ public class SocketServer {
 			}
 		} 
 		catch (IOException e) {
+			System.out.println("Per problemi di udito, il server ha fallito l'ascolto...");
 			e.printStackTrace();
+			System.exit(0);
 		}
 		finally {
 			server.close();
+			System.exit(0);;
 		}
 	}
 
