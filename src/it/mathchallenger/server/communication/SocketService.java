@@ -448,6 +448,13 @@ public class SocketService implements Runnable {
 			} 
 			catch (InterruptedException e) {
 				e.printStackTrace();
+				try {
+					comm.close();
+				}
+				catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				break;
 			}
 			
 			if(timer_ping>PING_TIMEOUT){
@@ -455,7 +462,6 @@ public class SocketService implements Runnable {
 					break;
 				}
 			}
-			
 		}
 		
 		if(account!=null){

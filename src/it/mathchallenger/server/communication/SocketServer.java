@@ -34,6 +34,9 @@ public class SocketServer {
 					catch (SQLException e) {
 						e.printStackTrace();
 					}
+					
+					System.out.println("Chiusura di tutte le connessioni aperte");
+					thread_utenti_attivi.interrupt();
 				}
 			});
 		} 
