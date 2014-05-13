@@ -37,6 +37,7 @@ public class GestionePartite {
 		for(int i=0;i<bot_list.size();i++){
 			b_copy.add(bot_list.get(i));
 		}
+		avviaBot();
 		generaOrdineBot();
 	}
 	private void generaOrdineBot() {
@@ -116,6 +117,12 @@ public class GestionePartite {
 				e.printStackTrace();
 			}
 		}
-		
+	}
+	private void avviaBot() {
+		for(int i=0;i<bot_list.size();i++){
+			Bot bot=bot_list.get(i);
+			Thread t_bot=new Thread(bot);
+			t_bot.start();
+		}
 	}
 }

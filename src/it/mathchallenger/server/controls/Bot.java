@@ -21,6 +21,7 @@ public class Bot extends Account implements Runnable{
 
 	@Override
 	public void run() {
+		System.out.println("Avvio del bot "+getUsername());
 		Random rand=new Random(System.currentTimeMillis());
 		long random_sleep=(rand.nextInt(30)+10)*1000L;
 		int empty_time=0;
