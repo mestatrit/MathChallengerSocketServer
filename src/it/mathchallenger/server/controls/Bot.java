@@ -9,14 +9,14 @@ import it.mathchallenger.server.tda.NodeQueue;
 import it.mathchallenger.server.tda.Queue;
 
 public class Bot extends Account implements Runnable{
-	private Queue<Partita> partite;
+	private Queue<Integer> partite;
 	private int percentuale;
 	public Bot(String botname, int percentuale_successo, int id) {
 		super();
 		percentuale=percentuale_successo;
 		super.setUsername(botname);
 		super.setID(id);
-		partite=new NodeQueue<Partita>();
+		partite=new NodeQueue<Integer>();
 	}
 
 	@Override
@@ -28,15 +28,19 @@ public class Bot extends Account implements Runnable{
 		while(true){
 			if(!partite.isEmpty()){
 				empty_time=0;
-				Partita p=partite.dequeue();
-				for(int i=0;i<p.getNumeroDomande();i++){
-					Domanda d=p.getDomanda(i);
-					if(rand.nextInt(100)<=percentuale)
-						d.setUser2Risposta(Domanda.ESATTA);
-					else
-						d.setUser2Risposta(Domanda.SBAGLIATA);
+				int id_partita=partite.dequeue();
+				Partita p=DBPartita.getInstance().getPartitaByID(id_partita);
+				if(p!=null && p.getStatoPartita()<=Partita.INIZIATA){
+    				System.out.println("Bot "+getUsername()+" risponde alla partita "+id_partita);
+					for(int i=0;i<p.getNumeroDomande();i++){
+    					Domanda d=p.getDomanda(i);
+    					if(rand.nextInt(100)<=percentuale)
+    						d.setUser2Risposta(Domanda.ESATTA);
+    					else
+    						d.setUser2Risposta(Domanda.SBAGLIATA);
+    				}
+    				DBPartita.getInstance().rispondiDomandeBot(p);
 				}
-				DBPartita.getInstance().rispondiDomandeBot(p);
 			}
 			else
 				empty_time++;
@@ -49,7 +53,7 @@ public class Bot extends Account implements Runnable{
 			}
 		}
 	}
-	public void aggiungiPartita(Partita p){
+	public void aggiungiPartita(Integer p){
 		partite.enqueue(p);
 	}
 }

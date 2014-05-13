@@ -12,33 +12,33 @@ public class SocketServer {
 	public static ThreadGroup thread_utenti_attivi=new ThreadGroup("t_utenti_attivi");
 	private static ServerSocket server = null;
 	public static void main(String[] args) throws IOException {
+		Runtime.getRuntime().addShutdownHook(new Thread(){
+			public void run(){
+				try {
+					System.out.println("Chiusura del ServerSocket");
+					server.close();
+					
+				} 
+				catch (IOException e) {
+					System.out.println("Chiusura del socket fallita");
+					e.printStackTrace();
+				}
+				
+				try {
+					System.out.println("Chiusura delle connessioni al database");
+					DBConnectionPool.freeConnections();
+				}
+				catch (SQLException e) {
+					e.printStackTrace();
+				}
+				
+				System.out.println("Chiusura di tutte le connessioni aperte");
+				thread_utenti_attivi.interrupt();
+			}
+		});
 		try {
 			System.out.println("Avvio il collegamento con il database...");
 			DBConnectionPool.init();
-			Runtime.getRuntime().addShutdownHook(new Thread(){
-				public void run(){
-					try {
-						System.out.println("Chiusura del ServerSocket");
-						server.close();
-						
-					} 
-					catch (IOException e) {
-						System.out.println("Chiusura del socket fallita");
-						e.printStackTrace();
-					}
-					
-					try {
-    					System.out.println("Chiusura delle connessioni al database");
-    					DBConnectionPool.freeConnections();
-					}
-					catch (SQLException e) {
-						e.printStackTrace();
-					}
-					
-					System.out.println("Chiusura di tutte le connessioni aperte");
-					thread_utenti_attivi.interrupt();
-				}
-			});
 		} 
 		catch (ClassNotFoundException | SQLException e1) {
 			System.out.println("Collegamento con il database fallito...");

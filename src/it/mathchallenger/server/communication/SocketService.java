@@ -1,5 +1,6 @@
 package it.mathchallenger.server.communication;
 
+import it.mathchallenger.server.controls.Bot;
 import it.mathchallenger.server.controls.DBAccount;
 import it.mathchallenger.server.controls.DBPartita;
 import it.mathchallenger.server.controls.GestionePartite;
@@ -195,8 +196,6 @@ public class SocketService implements Runnable {
 										Partita p=partite.get(i);
 										Account sfidato=null;
 										if(p.getIDUtente2()<=0){
-											//System.out.println("account2 null");
-											//sfidato=GestionePartite.getInstance().getBotByID(p.getIDUtente2())
 											sfidato=GestionePartite.getInstance().getBotRandom();
 										}
 										else {
@@ -206,18 +205,6 @@ public class SocketService implements Runnable {
 										if(sfidato==null)
 											continue;
 										res.append(";partita="+p.getIDPartita()+","+sfidato.getID()+","+sfidato.getUsername()+","+p.getStatoPartita());
-										/*
-										Partita p=partite.get(i);
-										Integer id_sfidante=account.getID()==p.getIDUtente1()?p.getIDUtente2():p.getIDUtente1();
-										Account acc_sfidante = null;
-										if(id_sfidante==null)
-											acc_sfidante=GestionePartite.getInstance().getBotRandom();
-										else
-											acc_sfidante=DBAccount.getInstance().getAccountByID(id_sfidante);
-										if(acc_sfidante==null)
-											continue;
-										res.append(";partita="+p.getIDPartita()+","+id_sfidante+","+acc_sfidante.getUsername()+","+p.getStatoPartita());
-										*/
 									}
 								}
 								OutputWrite(res.toString());
@@ -234,8 +221,8 @@ public class SocketService implements Runnable {
 									break;
 								}
 								Integer id_utente_sfidato=Integer.parseInt(cmd[1]);
-								if(id_utente_sfidato==account.getID()){
-									OutputWrite("newgame=error;message=You cant challenge yourself");
+								if(id_utente_sfidato==account.getID() || id_utente_sfidato==0){
+									OutputWrite("newgame=error;message=You can't challenge this user");
 									break;
 								}
 								Partita partita=DBPartita.getInstance().creaPartita(account.getID(), id_utente_sfidato);
@@ -253,6 +240,9 @@ public class SocketService implements Runnable {
 								Account acc_sfidante=GestionePartite.getInstance().accountRandom(account.getID());
 								int id_s=acc_sfidante.getID();
 								Partita p=DBPartita.getInstance().creaPartita(account.getID(), id_s<0?0:id_s);
+								if(acc_sfidante instanceof Bot){
+									((Bot)acc_sfidante).aggiungiPartita(p.getIDPartita());
+								}
 								OutputWrite("newgame-random=OK;id="+p.getIDPartita());
 							}
 							else 
