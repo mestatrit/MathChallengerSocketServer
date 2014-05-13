@@ -5,6 +5,7 @@ import it.mathchallenger.server.controls.DBAccount;
 import it.mathchallenger.server.controls.DBPartita;
 import it.mathchallenger.server.controls.GestionePartite;
 import it.mathchallenger.server.entities.Account;
+import it.mathchallenger.server.entities.Domanda;
 import it.mathchallenger.server.entities.Partita;
 import it.mathchallenger.server.storage.LoggerManager;
 
@@ -14,6 +15,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Logger;
 
 public class SocketService implements Runnable {
@@ -83,7 +85,7 @@ public class SocketService implements Runnable {
 								String pass=cmd[2].trim();
 								account=DBAccount.getInstance().login(user, pass);
 								if(account!=null)
-									OutputWrite("login=OK;authcode="+account.getAuthCode()+";id="+account.getID());
+									OutputWrite("login=OK;<authcode="+account.getAuthCode()+";id="+account.getID());
 								else
 									OutputWrite("login=error");
 							}
@@ -414,6 +416,45 @@ public class SocketService implements Runnable {
 							else
 								OutputWrite("search-user=error;message=Usage: search-user nomeutente");
 							break;
+						case "getDomande":
+							if(cmd.length==2){
+								if(account==null){
+									OutputWrite("getDomande=error;message=You must be logged in");
+									break;
+								}
+								int idP=Integer.parseInt(cmd[1]);
+								Partita p=DBPartita.getInstance().getPartitaByID(idP);
+								if(p.getIDUtente1()==account.getID() || p.getIDUtente2()==account.getID()){
+									StringBuilder res=new StringBuilder("getDomande=OK");
+									for(int i=1;i<=p.getNumeroDomande();i++){
+										Domanda d=p.getDomanda(i-1);
+										int[] r=randomInteri(4);
+										res.append(";domanda"+i+"="+d.getDomanda()+";risposte"+i+"=");
+										for(int j=0;j<r.length;j++){
+											int index=r[j];
+											switch(index){
+												case 0:
+													res.append(d.getRispostaEsatta());
+													break;
+												case 1:
+												case 2:
+												case 3:
+													res.append(d.getRispostaErrata(index));
+													break;
+											}
+											if(j<r.length-1)
+												res.append(',');
+										}
+									}
+									OutputWrite(res.toString());
+								}
+								else {
+									OutputWrite("getDomande=error;message=This is match don't belong to you");
+									break;
+								}
+							}
+							else 
+								OutputWrite("getDomande=error;message=Usage: getDomande id_partita");
 						default:
 							//logger.severe(str);
 							break;
@@ -480,5 +521,18 @@ public class SocketService implements Runnable {
 			s+="\n";
 		output.write(s.getBytes());
 		output.flush();
+	}
+	private Random rand=new Random(); 
+	private int[] randomInteri(int s){
+		ArrayList<Integer> resps=new ArrayList<Integer>(s);
+		for(int i=0;i<s;i++)
+			resps.add(i);
+		int[] rand=new int[s];
+		int i=0;
+		while(!resps.isEmpty()){
+			rand[i]=resps.remove(this.rand.nextInt(resps.size()));
+			i++;
+		}
+		return rand;
 	}
 }
