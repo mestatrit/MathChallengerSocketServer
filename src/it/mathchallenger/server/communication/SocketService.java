@@ -429,7 +429,7 @@ public class SocketService implements Runnable {
 									for(int i=1;i<=p.getNumeroDomande();i++){
 										Domanda d=p.getDomanda(i-1);
 										int[] r=randomInteri(4);
-										res.append(";domanda"+i+"="+d.getDomanda()+";risposte"+i+"=");
+										res.append(";domanda"+i+"="+d.getDomanda()+";risposta"+i+"=");
 										for(int j=0;j<r.length;j++){
 											int index=r[j];
 											switch(index){
