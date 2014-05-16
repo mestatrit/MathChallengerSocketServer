@@ -85,7 +85,7 @@ public class SocketService implements Runnable {
 								String pass=cmd[2].trim();
 								account=DBAccount.getInstance().login(user, pass);
 								if(account!=null)
-									OutputWrite("login=OK;<authcode="+account.getAuthCode()+";id="+account.getID());
+									OutputWrite("login=OK;authcode="+account.getAuthCode()+";id="+account.getID());
 								else
 									OutputWrite("login=error");
 							}
