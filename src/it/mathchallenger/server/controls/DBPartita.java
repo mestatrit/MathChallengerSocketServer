@@ -457,21 +457,23 @@ public class DBPartita {
 	public boolean abbandonaPartita(int id_partita, int id_account){
 		Partita p=getPartitaByID(id_partita);
 		if(p!=null){
-			if(p.getIDUtente1()==id_account){
-				p.setStatoPartita(Partita.VINCITORE_2);
-				DBStatistiche.getInstance().aggiungiAbbandonoAtUser(id_account);
-				DBStatistiche.getInstance().aggiungiVittoriaAtUser(p.getIDUtente2());
+			if(p.getStatoPartita()<=Partita.INIZIATA){
+    			if(p.getIDUtente1()==id_account){
+    				p.setStatoPartita(Partita.VINCITORE_2);
+    				DBStatistiche.getInstance().aggiungiAbbandonoAtUser(id_account);
+    				DBStatistiche.getInstance().aggiungiVittoriaAtUser(p.getIDUtente2());
+    			}
+    			else if(p.getIDUtente2()==id_account){
+    				p.setStatoPartita(Partita.VINCITORE_1);
+    				DBStatistiche.getInstance().aggiungiAbbandonoAtUser(id_account);
+    				DBStatistiche.getInstance().aggiungiVittoriaAtUser(p.getIDUtente1());
+    			}
+    			else
+    				return false;
+    			
+    			aggiornaStatoPartita(p);
+    			return true;
 			}
-			else if(p.getIDUtente2()==id_account){
-				p.setStatoPartita(Partita.VINCITORE_1);
-				DBStatistiche.getInstance().aggiungiAbbandonoAtUser(id_account);
-				DBStatistiche.getInstance().aggiungiVittoriaAtUser(p.getIDUtente1());
-			}
-			else
-				return false;
-			
-			aggiornaStatoPartita(p);
-			return true;
 		}
 		return false;
 	}
