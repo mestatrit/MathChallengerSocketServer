@@ -84,8 +84,10 @@ public class SocketService implements Runnable {
 								String user=cmd[1].trim();
 								String pass=cmd[2].trim();
 								account=DBAccount.getInstance().login(user, pass);
-								if(account!=null)
+								if(account!=null){
+									GestionePartite.getInstance().entraUtente(account);
 									OutputWrite("login=OK;authcode="+account.getAuthCode()+";id="+account.getID());
+								}
 								else
 									OutputWrite("login=error");
 							}
@@ -101,10 +103,11 @@ public class SocketService implements Runnable {
 								timer_ping=0;
 								int id=Integer.parseInt(cmd[1].trim());
 								String auth=cmd[2].trim();
-								//System.out.println("authcode login: "+auth);
 								account=DBAccount.getInstance().login(id, auth);
-								if(account!=null)
+								if(account!=null){
+									GestionePartite.getInstance().entraUtente(account);
 									OutputWrite("login=OK");
+								}
 								else 
 									OutputWrite("login=error;message=invalid authcode");
 							}
