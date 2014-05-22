@@ -77,11 +77,14 @@ public class GestionePartite {
 			return getBotRandom();
 		}
 		else {
-			int acc_ind=rand.nextInt(utenti_loggati.size());
-			if(acc_ind==id_ricercante)
-				return accountRandom(id_ricercante);
-			else
-				return utenti_loggati.get(acc_ind);
+			int prove=0;
+			while(prove<5){
+				int acc_ind=rand.nextInt(utenti_loggati.size());
+				Account acc=utenti_loggati.get(acc_ind);
+				if(acc.getID()!=id_ricercante)
+					return acc;
+			}
+			return getBotRandom();
 		}
 	}
 	private void loadBot(){
