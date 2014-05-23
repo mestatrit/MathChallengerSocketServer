@@ -1,7 +1,6 @@
 package it.mathchallenger.server.controls;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.logging.Logger;
 
 import de.congrace.exp4j.Calculable;
@@ -11,15 +10,12 @@ import de.congrace.exp4j.UnparsableExpressionException;
 import it.mathchallenger.server.entities.Domanda;
 import it.mathchallenger.server.storage.LoggerManager;
 
-public class GeneratoreEspressioniFacili implements Risolutore{
+public class GeneratoreEspressioniFacili extends Risolutore{
 	private static GeneratoreEspressioniFacili generatore;
 	private static Logger logger;
 	
-	
-	private Random rand;
-	
 	private GeneratoreEspressioniFacili() {
-		rand=new Random(System.currentTimeMillis());
+		super();
 		logger=LoggerManager.newLogger(getClass().getName());
 	}
 	
@@ -29,7 +25,7 @@ public class GeneratoreEspressioniFacili implements Risolutore{
 		}
 		return generatore;
 	}
-	private final static String[] operazioni_easy={"+","-","*","/"};
+	
 	public Domanda generaDomanda() {
 		String op=operazioni_easy[rand.nextInt(operazioni_easy.length)];
 		int op1=0, op2=0;
@@ -47,7 +43,6 @@ public class GeneratoreEspressioniFacili implements Risolutore{
 				case "/":
 					op1=rand.nextInt(101);
 					ArrayList<Integer> divisori=new ArrayList<Integer>();
-					divisori.add(op1);
 					op2=op1/2;
 					while(op2>1){
 						if(op1%op2==0)
@@ -56,6 +51,8 @@ public class GeneratoreEspressioniFacili implements Risolutore{
 					}
 					if(divisori.size()==0){
 						divisori.add(1);
+						divisori.add(-op1);
+						divisori.add(-1);
 						divisori.add(op1);
 					}
 					op2=divisori.get(rand.nextInt(divisori.size()));
