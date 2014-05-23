@@ -49,10 +49,14 @@ public class GeneratoreEspressioniFacili implements Risolutore{
 					ArrayList<Integer> divisori=new ArrayList<Integer>();
 					divisori.add(op1);
 					op2=op1/2;
-					while(op2>0){
+					while(op2>1){
 						if(op1%op2==0)
 							divisori.add(op2);
 						op2--;
+					}
+					if(divisori.size()==0){
+						divisori.add(1);
+						divisori.add(op1);
 					}
 					op2=divisori.get(rand.nextInt(divisori.size()));
 					break;
