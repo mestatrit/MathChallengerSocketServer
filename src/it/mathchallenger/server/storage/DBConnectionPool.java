@@ -40,7 +40,7 @@ public class DBConnectionPool {
 	/**
 	 * The db properties (driver, url, login, and password)
 	 */
-	private static Properties dbProperties;
+	private static Properties	   dbProperties;
 	/**
 	 * The free connection queue
 	 */
@@ -86,7 +86,8 @@ public class DBConnectionPool {
 	 * Releases the connection represented by <code>pReleasedConnection</code>
 	 * parameter
 	 * 
-	 * @param pReleasedConnection The db connection to release
+	 * @param pReleasedConnection
+	 *            The db connection to release
 	 */
 	public static synchronized void releaseConnection(Connection pReleasedConnection) {
 		try {
@@ -95,7 +96,7 @@ public class DBConnectionPool {
 			pReleasedConnection.close();
 		}
 		catch (SQLException ex) {
-			Logger.getLogger(DBConnectionPool.class.getName()).log(Level.SEVERE,null,ex);
+			Logger.getLogger(DBConnectionPool.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
@@ -109,9 +110,7 @@ public class DBConnectionPool {
 		Connection newConnection = null;
 
 		// Create a new db connection using the db properties
-		newConnection = DriverManager.getConnection(DBConnectionPool.dbProperties.getProperty("url"),
-				DBConnectionPool.dbProperties.getProperty("username"),
-				DBConnectionPool.dbProperties.getProperty("password"));
+		newConnection = DriverManager.getConnection(DBConnectionPool.dbProperties.getProperty("url"), DBConnectionPool.dbProperties.getProperty("username"), DBConnectionPool.dbProperties.getProperty("password"));
 
 		newConnection.setAutoCommit(true);
 
@@ -120,7 +119,7 @@ public class DBConnectionPool {
 
 	private static void loadDbDriver() throws ClassNotFoundException {
 		Class.forName(dbProperties.getProperty("driver"));
-		//Class.forName("com.mysql.jdbc.Driver");
+		// Class.forName("com.mysql.jdbc.Driver");
 
 	}
 
@@ -130,27 +129,42 @@ public class DBConnectionPool {
 	 * @throws IOException
 	 */
 	private static void loadDbProperties() throws IOException {
-		
-		InputStream fileProperties = new FileInputStream("database.properties")/*DBConnectionPool.class.getClassLoader().getResourceAsStream("/database.properties")*/;
+
+		InputStream fileProperties = new FileInputStream("database.properties")/*
+																			    * DBConnectionPool
+																			    * .
+																			    * class
+																			    * .
+																			    * getClassLoader
+																			    * (
+																			    * )
+																			    * .
+																			    * getResourceAsStream
+																			    * (
+																			    * "/database.properties"
+																			    * )
+																			    */;
 		dbProperties = new Properties();
 		dbProperties.load(fileProperties);
-		
+
 		/*
-		dbProperties = new Properties();
-		dbProperties.setProperty("driver", "com.mysql.jdbc.Driver");
-		dbProperties.setProperty("url", "jdbc:mysql://localhost/mathchallenger");
-		dbProperties.setProperty("username", "root");
-		dbProperties.setProperty("password", "");
-		*/
+		 * dbProperties = new Properties(); dbProperties.setProperty("driver",
+		 * "com.mysql.jdbc.Driver"); dbProperties.setProperty("url",
+		 * "jdbc:mysql://localhost/mathchallenger");
+		 * dbProperties.setProperty("username", "root");
+		 * dbProperties.setProperty("password", "");
+		 */
 	}
-	public static void init() throws ClassNotFoundException, IOException, SQLException{
+
+	public static void init() throws ClassNotFoundException, IOException, SQLException {
 		loadDbDriver();
 		loadDbProperties();
 		createDBConnection();
 	}
-	public static void freeConnections() throws SQLException{
-		for(int i=0;i<freeDbConnections.size();i++){
-			if(freeDbConnections.get(i)!=null){
+
+	public static void freeConnections() throws SQLException {
+		for (int i = 0; i < freeDbConnections.size(); i++) {
+			if (freeDbConnections.get(i) != null) {
 				freeDbConnections.get(i).close();
 			}
 		}

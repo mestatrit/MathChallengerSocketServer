@@ -92,7 +92,7 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 		int i=0;
 		while(i<1000){
     		Domanda d=ris.generaDomanda();
-    		System.out.println(d.getDomanda()+ " - "+d.getRispostaEsatta());
+    		System.out.println(d.getDomanda()+ "\t\t"+d.getRispostaEsatta());
     		i++;
 		}
 	}
