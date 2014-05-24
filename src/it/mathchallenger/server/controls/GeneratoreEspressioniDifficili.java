@@ -2,8 +2,9 @@ package it.mathchallenger.server.controls;
 
 import java.util.ArrayList;
 
-import sun.security.jca.GetInstance;
 import it.mathchallenger.server.entities.Domanda;
+import de.congrace.exp4j.Calculable;
+import de.congrace.exp4j.ExpressionBuilder;
 import de.congrace.exp4j.UnknownFunctionException;
 import de.congrace.exp4j.UnparsableExpressionException;
 
@@ -30,6 +31,14 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 		
 		Domanda dom=new Domanda();
 		dom.setDomanda(domanda.toString());
+		try {
+			risolvi(dom);
+		}
+		catch (UnknownFunctionException | UnparsableExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return generaDomanda();
+		}
 		return dom;
 	}
 
@@ -41,8 +50,9 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 
 	@Override
 	public void risolvi(Domanda d) throws UnknownFunctionException, UnparsableExpressionException {
-		// TODO Auto-generated method stub
-
+		Calculable calc = new ExpressionBuilder(d.getDomanda()).build();
+		float res=(float) calc.calculate();
+		d.setRispostaEsatta(res);
 	}
 	private String generaEasy(){
 		int[] operatori=new int[2];
@@ -50,8 +60,8 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 		switch(op){
 			case "+":
 			case "-":
-				operatori[0]=rand.nextInt(30)+1;
-				operatori[1]=rand.nextInt(30)+1;
+				operatori[0]=rand.nextInt(20)+1;
+				operatori[1]=rand.nextInt(20)+1;
 				break;
 			case "*":
 				operatori[0]=rand.nextInt(11);
@@ -82,7 +92,7 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 		int i=0;
 		while(i<1000){
     		Domanda d=ris.generaDomanda();
-    		System.out.println(d.getDomanda());
+    		System.out.println(d.getDomanda()+ " - "+d.getRispostaEsatta());
     		i++;
 		}
 	}
