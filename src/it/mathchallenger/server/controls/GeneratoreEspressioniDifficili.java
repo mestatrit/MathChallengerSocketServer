@@ -33,9 +33,9 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 		dom.setDomanda(domanda.toString());
 		try {
 			risolvi(dom);
+			generaRisposteErrate(dom);
 		}
 		catch (UnknownFunctionException | UnparsableExpressionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return generaDomanda();
 		}
@@ -44,10 +44,59 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 
 	@Override
 	public void generaRisposteErrate(Domanda d) {
-		// TODO Auto-generated method stub
-
+		for(int i=1;i<=3;){
+			int shift=rand.nextInt(3)+1;
+			float newR=getRandomRisposta(d);
+			if(rand.nextInt(4)<=1){
+				newR-=shift;
+			}
+			else
+				newR+=shift;
+			if(!isPresenteRisposta(d, newR)){
+				d.setRispostaErrata(i, newR);
+				i++;
+			}
+		}
 	}
-
+	private float getRandomRisposta(Domanda d){
+		if(d.getRispostaErrata(1)==0 && d.getRispostaErrata(2)==0 && d.getRispostaErrata(3)==0)
+			return d.getRispostaEsatta();
+		else {
+			int errate_ok=0;
+			if(d.getRispostaErrata(3)!=0)
+				errate_ok=3;
+			else if(d.getRispostaErrata(2)!=0)
+				errate_ok=2;
+			else if(d.getRispostaErrata(1)!=0)
+				errate_ok=1;
+			else
+				return d.getRispostaEsatta();
+			int rand_n=rand.nextInt(4*(errate_ok+1))/4;
+			switch(rand_n){
+				case 0:
+					return d.getRispostaEsatta();
+				case 1:
+					return d.getRispostaErrata(1);
+				case 2:
+					return d.getRispostaErrata(2);
+				case 3:
+					return d.getRispostaErrata(3);
+				default:
+					return 0;
+			}
+		}
+	}
+	private boolean isPresenteRisposta(Domanda d, float r){
+		if(Float.compare(r, d.getRispostaEsatta())==0)
+			return true;
+		if(Float.compare(r, d.getRispostaErrata(1))==0)
+			return true;
+		if(Float.compare(r, d.getRispostaErrata(2))==0)
+			return true;
+		if(Float.compare(r, d.getRispostaErrata(3))==0)
+			return true;
+		return false;
+	}
 	@Override
 	public void risolvi(Domanda d) throws UnknownFunctionException, UnparsableExpressionException {
 		Calculable calc = new ExpressionBuilder(d.getDomanda()).build();
@@ -92,7 +141,7 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 		int i=0;
 		while(i<1000){
     		Domanda d=ris.generaDomanda();
-    		System.out.println(d.getDomanda()+ "\t\t"+d.getRispostaEsatta());
+    		System.out.println(d.getDomanda()+ "\t\t"+d.getRispostaEsatta()+" "+d.getRispostaErrata(1)+" "+d.getRispostaErrata(2)+" "+d.getRispostaErrata(3));
     		i++;
 		}
 	}
