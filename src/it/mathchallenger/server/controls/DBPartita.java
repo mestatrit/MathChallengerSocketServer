@@ -14,11 +14,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 import java.util.logging.Logger;
 
 public class DBPartita {
 	private static DBPartita manager;
 	private static Logger	logger;
+	private Random rand;
 
 	public static synchronized DBPartita getInstance() {
 		if (manager == null) {
@@ -30,6 +32,7 @@ public class DBPartita {
 	private DBPartita() {
 		logger = LoggerManager.newLogger(getClass().getName());
 		dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		rand=new Random(System.currentTimeMillis());
 	}
 
 	public Partita creaPartita(int id1, Integer id2) {
@@ -38,34 +41,23 @@ public class DBPartita {
 		partita.setIDUtente2(id2);
 		partita.setInizioPartita(System.currentTimeMillis());
 		partita.setStatoPartita(Partita.CREATA);
-		Domanda d1 = generaDomandaFacile();
-		d1.setNumeroDomanda(1);
-		// TODO modificare da domanda facile
-		Domanda d2 = generaDomandaFacile();
-		d2.setNumeroDomanda(2);
-		Domanda d3 = generaDomandaFacile();
-		d3.setNumeroDomanda(3);
-		Domanda d4 = generaDomandaFacile();
-		d4.setNumeroDomanda(4);
-		Domanda d5 = generaDomandaFacile();
-		d5.setNumeroDomanda(5);
-		Domanda d6 = generaDomandaFacile();
-		d6.setNumeroDomanda(6);
-		// FINE esempio
-
-		/*
-		 * Domanda d2=generaDomandaMedia(); d2.setNumeroDomanda(2); Domanda
-		 * d3=generaDomandaMedia(); d3.setNumeroDomanda(3); Domanda
-		 * d4=generaDomandaDifficile(); d4.setNumeroDomanda(4); Domanda
-		 * d5=generaDomandaDifficile(); d5.setNumeroDomanda(5); Domanda
-		 * d6=generaDomandaDifficilissima(); d6.setNumeroDomanda(6);
-		 */
-		partita.aggiungiDomanda(d1);
-		partita.aggiungiDomanda(d2);
-		partita.aggiungiDomanda(d3);
-		partita.aggiungiDomanda(d4);
-		partita.aggiungiDomanda(d5);
-		partita.aggiungiDomanda(d6);
+		for(int i=0;i<6;i++){
+			int ra=rand.nextInt(4);
+			switch(ra){
+				case 0:
+					partita.aggiungiDomanda(generaDomandaFacile());
+					break;
+				case 1:
+					partita.aggiungiDomanda(generaDomandaMedia());
+					break;
+				case 2:
+					partita.aggiungiDomanda(generaDomandaDifficile());
+					break;
+				case 3:
+					partita.aggiungiDomanda(generaDomandaDifficilissima());
+					break;
+			}
+		}
 		inserisciPartita(partita);
 		return partita;
 	}
@@ -321,15 +313,18 @@ public class DBPartita {
 	}
 
 	private Domanda generaDomandaMedia() {
-		return null;
+		return generaDomandaFacile();
 	}
 
 	private Domanda generaDomandaDifficile() {
-		return null;
+		Domanda d = GeneratoreEspressioniDifficili.getInstance().generaDomanda();
+		String dom = d.getDomanda().replace('*', 'x').replace('/', ':');
+		d.setDomanda(dom);
+		return d;
 	}
 
 	private Domanda generaDomandaDifficilissima() {
-		return null;
+		return generaDomandaDifficile();
 	}
 
 	private static DateFormat dateFormat;
