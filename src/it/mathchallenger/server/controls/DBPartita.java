@@ -56,6 +56,9 @@ public class DBPartita {
 				case 3:
 					partita.aggiungiDomanda(generaDomandaDifficilissima());
 					break;
+				default:
+					partita.aggiungiDomanda(generaDomandaFacile());
+					break;
 			}
 		}
 		inserisciPartita(partita);

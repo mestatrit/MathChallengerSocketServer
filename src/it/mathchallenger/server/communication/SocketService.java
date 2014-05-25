@@ -65,7 +65,7 @@ public class SocketService implements Runnable {
 						case "exit":
 							if (cmd.length == 1) {
 								if (account == null) {
-									OutputWrite("exit=error;message=You must be logged in");
+									OutputWrite("exit=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								OutputWrite("exit=OK");
@@ -78,7 +78,7 @@ public class SocketService implements Runnable {
 						case "login":
 							if (cmd.length == 3) {
 								if (account != null) {
-									OutputWrite("login=error;message=You already are logged in");
+									OutputWrite("login=error;message="+ListaErrori.SEI_LOGGATO);
 									break;
 								}
 								timer_ping = 0;
@@ -98,7 +98,7 @@ public class SocketService implements Runnable {
 						case "login-authcode":
 							if (cmd.length == 3) {
 								if (account != null) {
-									OutputWrite("login=error;message=You already are logged in");
+									OutputWrite("login=error;message="+ListaErrori.SEI_LOGGATO);
 									break;
 								}
 								timer_ping = 0;
@@ -110,7 +110,7 @@ public class SocketService implements Runnable {
 									OutputWrite("login=OK");
 								}
 								else
-									OutputWrite("login=error;message=invalid authcode");
+									OutputWrite("login=error;message="+ListaErrori.INVALID_AUTHCODE);
 							}
 							else
 								OutputWrite("login=error;message=Usage: login-auth id authcode");
@@ -118,7 +118,7 @@ public class SocketService implements Runnable {
 						case "logout":
 							if (cmd.length == 1) {
 								if (account == null) {
-									OutputWrite("logout=error;message=You must be logged in");
+									OutputWrite("logout=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								GestionePartite.getInstance().esceUtente(account);
@@ -137,14 +137,14 @@ public class SocketService implements Runnable {
 						case "change-psw":
 							if (cmd.length == 3) {
 								if (account == null) {
-									OutputWrite("change-psw=error;message=You must be logged in");
+									OutputWrite("change-psw=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								String oldPass = cmd[1].trim();
 								String newPass = cmd[2].trim();
 								Account acc = DBAccount.getInstance().login(account.getUsername(), oldPass);
 								if (acc == null) {
-									OutputWrite("change-psw=error;message=La vecchia password è errata");
+									OutputWrite("change-psw=error;message="+ListaErrori.VECCHIA_PASSWORD_ERRATA);
 									break;
 								}
 								boolean change = DBAccount.getInstance().changePassword(account, newPass);
@@ -167,7 +167,7 @@ public class SocketService implements Runnable {
 						case "register":
 							if (cmd.length == 4) {
 								if (account != null) {
-									OutputWrite("register=error;message=You already are logged in");
+									OutputWrite("register=error;message="+ListaErrori.SEI_LOGGATO);
 									break;
 								}
 								String user = cmd[1];
@@ -175,7 +175,7 @@ public class SocketService implements Runnable {
 								String email = cmd[3];
 								DBAccount dba = DBAccount.getInstance();
 								if (dba.isAccountExist(user))
-									OutputWrite("register=error;message=username in uso");
+									OutputWrite("register=error;message="+ListaErrori.USERNAME_IN_USO);
 								else {
 									account = dba.registra(user, pass, email);
 									if (account != null) {
@@ -192,7 +192,7 @@ public class SocketService implements Runnable {
 						case "getPartiteInCorso":
 							if (cmd.length == 1) {
 								if (account == null) {
-									OutputWrite("getPartiteInCorso=error;message=You must be logged in");
+									OutputWrite("getPartiteInCorso=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								ArrayList<Partita> partite = DBPartita.getInstance().getPartiteByUser(account.getID());
@@ -223,12 +223,12 @@ public class SocketService implements Runnable {
 						case "newgame":
 							if (cmd.length == 2) {
 								if (account == null) {
-									OutputWrite("newgame=error;message=You must be logged in");
+									OutputWrite("newgame=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								Integer id_utente_sfidato = Integer.parseInt(cmd[1]);
 								if (id_utente_sfidato == account.getID() || id_utente_sfidato == 0) {
-									OutputWrite("newgame=error;message=You can't challenge this user");
+									OutputWrite("newgame=error;message="+ListaErrori.NON_PUOI_SFIDARE_QUESTO_UTENTE);
 									break;
 								}
 								Partita partita = DBPartita.getInstance().creaPartita(account.getID(), id_utente_sfidato);
@@ -240,7 +240,7 @@ public class SocketService implements Runnable {
 						case "newgame-random":
 							if (cmd.length == 1) {
 								if (account == null) {
-									OutputWrite("newgame-random=error;message=You must be logged in");
+									OutputWrite("newgame-random=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								Account acc_sfidante = GestionePartite.getInstance().accountRandom(account.getID());
@@ -257,7 +257,7 @@ public class SocketService implements Runnable {
 						case "getDettagliPartita":
 							if (cmd.length == 2) {
 								if (account == null) {
-									OutputWrite("getDettagliPartita=error;message=You must be logged in");
+									OutputWrite("getDettagliPartita=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								int id_partita = Integer.parseInt(cmd[1]);
@@ -303,11 +303,11 @@ public class SocketService implements Runnable {
 										OutputWrite(r.toString());
 									}
 									else {
-										OutputWrite("getDettagliPartita=error;message=This is not your match");
+										OutputWrite("getDettagliPartita=error;message="+ListaErrori.NON_E_UNA_TUA_PARTITA);
 									}
 								}
 								else {
-									OutputWrite("getDettagliPartita=error;message=Match not found");
+									OutputWrite("getDettagliPartita=error;message="+ListaErrori.PARTITA_NON_TROVATA);
 								}
 							}
 							else
@@ -316,7 +316,7 @@ public class SocketService implements Runnable {
 						case "abandon":
 							if (cmd.length == 2) {
 								if (account == null) {
-									OutputWrite("abandon=error;message=You must be logged in");
+									OutputWrite("abandon=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								Integer id_partita = Integer.parseInt(cmd[1]);
@@ -324,7 +324,7 @@ public class SocketService implements Runnable {
 									OutputWrite("abandon=OK");
 								}
 								else {
-									OutputWrite("abandon=error;message=Retry later");
+									OutputWrite("abandon=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 								}
 							}
 							else
@@ -333,7 +333,7 @@ public class SocketService implements Runnable {
 						case "answer":
 							if (cmd.length == 8) {
 								if (account == null) {
-									OutputWrite("answer=error;message=You must be logged in");
+									OutputWrite("answer=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								int id = Integer.parseInt(cmd[1]);
@@ -353,12 +353,12 @@ public class SocketService implements Runnable {
 						case "addfriend":
 							if (cmd.length == 2) {
 								if (account == null) {
-									OutputWrite("addfriend=error;message=You must be logged in");
+									OutputWrite("addfriend=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								int idAmico = Integer.parseInt(cmd[1]);
 								if (idAmico == 0 || idAmico == account.getID()) {
-									OutputWrite("addfriend=error;message=You can't add this account to friends");
+									OutputWrite("addfriend=error;message="+ListaErrori.NON_PUOI_AGGIUNGERE_QUESTO_ACCOUNT_AGLI_AMICI);
 									break;
 								}
 								DBAccount.getInstance().addFriend(account, idAmico);
@@ -370,7 +370,7 @@ public class SocketService implements Runnable {
 						case "removefriend":
 							if (cmd.length == 2) {
 								if (account == null) {
-									OutputWrite("removefriend=error;message=You must be logged in");
+									OutputWrite("removefriend=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								int id_amico = Integer.parseInt(cmd[1]);
@@ -383,7 +383,7 @@ public class SocketService implements Runnable {
 						case "getMyFriends":
 							if (cmd.length == 1) {
 								if (account == null) {
-									OutputWrite("getMyFriends=error;message=You must be logged in");
+									OutputWrite("getMyFriends=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								ArrayList<Account> amici = DBAccount.getInstance().getListaAmici(account);
@@ -404,7 +404,7 @@ public class SocketService implements Runnable {
 						case "search-user":
 							if (cmd.length == 2) {
 								if (account == null) {
-									OutputWrite("search-user=error;messagge=You must be logged in");
+									OutputWrite("search-user=error;messagge="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								ArrayList<Account> results = DBAccount.getInstance().searchUser(account, cmd[1]);
@@ -423,7 +423,7 @@ public class SocketService implements Runnable {
 						case "getDomande":
 							if (cmd.length == 2) {
 								if (account == null) {
-									OutputWrite("getDomande=error;message=You must be logged in");
+									OutputWrite("getDomande=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 									break;
 								}
 								int idP = Integer.parseInt(cmd[1]);
@@ -453,14 +453,13 @@ public class SocketService implements Runnable {
 									OutputWrite(res.toString());
 								}
 								else {
-									OutputWrite("getDomande=error;message=This is match don't belong to you");
+									OutputWrite("getDomande=error;message="+ListaErrori.NON_E_UNA_TUA_PARTITA);
 									break;
 								}
 							}
 							else
 								OutputWrite("getDomande=error;message=Usage: getDomande id_partita");
 						default:
-							// logger.severe(str);
 							break;
 					}
 					svuotaBuffer(readed, 2048);
