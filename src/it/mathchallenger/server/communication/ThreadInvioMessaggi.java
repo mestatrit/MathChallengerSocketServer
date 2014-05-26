@@ -26,9 +26,11 @@ public class ThreadInvioMessaggi extends Thread {
 				Email mail = codaMessaggi.dequeue();
 				if (mail != null) {
 					try {
+						System.out.println("Invio email in corso...");
 						mail.send();
 					}
-					catch (EmailException e) {
+					catch (Exception e) {
+						e.printStackTrace();
 						codaMessaggi.enqueue(mail);
 					}
 				}

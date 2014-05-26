@@ -11,6 +11,7 @@ import java.sql.SQLException;
 public class SocketServer {
 	public static ThreadGroup   thread_utenti_attivi = new ThreadGroup("t_utenti_attivi");
 	private static ServerSocket server			   = null;
+	private static MailSender mailsender = null;
 
 	public static void main(String[] args) throws IOException {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -45,6 +46,10 @@ public class SocketServer {
 			System.out.println("Collegamento con il database fallito...");
 			System.exit(0);
 		}
+		System.out.println("Avvio il controller per inviare le email...");
+		mailsender=new MailSender();
+		mailsender.start();
+		/*
 		Thread threadMail = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -60,7 +65,7 @@ public class SocketServer {
 			}
 		});
 		threadMail.start();
-
+		 */
 		System.out.println("Istanziazione del Gestore delle partite");
 		GestionePartite.getInstance();
 
