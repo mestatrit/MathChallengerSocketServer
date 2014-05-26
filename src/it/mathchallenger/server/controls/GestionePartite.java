@@ -90,9 +90,12 @@ public class GestionePartite {
 			int prove = 0;
 			while (prove < 5) {
 				int acc_ind = rand.nextInt(utenti_loggati.size());
-				Account acc = utenti_loggati.get(acc_ind);
-				if (acc.getID() != id_ricercante)
-					return acc;
+				if(acc_ind<utenti_loggati.size()){
+    				Account acc = utenti_loggati.get(acc_ind);
+    				if (acc.getID() != id_ricercante)
+    					return acc;
+    				}
+				prove++;
 			}
 			return getBotRandom();
 		}

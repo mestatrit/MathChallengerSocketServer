@@ -41,7 +41,7 @@ public class GeneratoreEspressioniFacili extends Risolutore {
 					op2 = rand.nextInt(11);
 					break;
 				case "/":
-					op1 = rand.nextInt(101);
+					op1 = rand.nextInt(100)+1;
 					ArrayList<Integer> divisori = new ArrayList<Integer>();
 					op2 = op1 / 2;
 					while (op2 > 1) {
