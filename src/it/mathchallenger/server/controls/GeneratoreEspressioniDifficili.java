@@ -127,7 +127,8 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 				}
 				if(divisori.size()==0){
 					divisori.add(1);
-					divisori.add(operatori[0]);
+					if(operatori[0]!=0)
+						divisori.add(operatori[0]);
 				}
 				operatori[1]=divisori.get(rand.nextInt(divisori.size()));
 				break;

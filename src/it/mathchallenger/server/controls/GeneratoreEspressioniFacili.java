@@ -51,9 +51,11 @@ public class GeneratoreEspressioniFacili extends Risolutore {
 					}
 					if (divisori.size() == 0) {
 						divisori.add(1);
-						divisori.add(-op1);
 						divisori.add(-1);
-						divisori.add(op1);
+						if(op1!=0){
+    						divisori.add(-op1);
+    						divisori.add(op1);
+						}
 					}
 					op2 = divisori.get(rand.nextInt(divisori.size()));
 					break;
