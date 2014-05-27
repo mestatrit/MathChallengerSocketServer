@@ -1,8 +1,5 @@
 package it.mathchallenger.server.communication;
 
-import it.mathchallenger.server.tda.NodeQueue;
-import it.mathchallenger.server.tda.Queue;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,17 +8,13 @@ import java.util.Properties;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Provider;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.mail.DefaultAuthenticator;
-import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.SimpleEmail;
 
 public class MailSender extends Thread{
 	private static Properties   email_prop;
@@ -146,7 +139,7 @@ public class MailSender extends Thread{
 		            Message msg = new MimeMessage(session);
 		            msg.setFrom(new InternetAddress(email_prop.getProperty("email"), email_prop.getProperty("nome-visualizzato")));
 		            msg.addRecipient(Message.RecipientType.TO,new InternetAddress(address));
-		            msg.setSubject("[MathChallenger] - Reset Password");
+		            msg.setSubject("[MathChallenger] - Welcome");
 		            msg.setText(body);
 		            Transport.send(msg, email_prop.getProperty("username"), email_prop.getProperty("password"));
 

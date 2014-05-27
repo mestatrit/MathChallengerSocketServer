@@ -1,7 +1,6 @@
 package it.mathchallenger.server.communication;
 
 import org.apache.commons.mail.Email;
-import org.apache.commons.mail.EmailException;
 
 import it.mathchallenger.server.tda.Queue;
 

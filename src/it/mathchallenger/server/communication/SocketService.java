@@ -492,6 +492,7 @@ public class SocketService implements Runnable {
 			}
 
 			if (timer_ping > PING_TIMEOUT) {
+				break;
 				/*
 				if (account != null) {
 					break;
