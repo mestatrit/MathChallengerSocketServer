@@ -3,10 +3,12 @@ package it.mathchallenger.server.communication;
 import it.mathchallenger.server.controls.Bot;
 import it.mathchallenger.server.controls.DBAccount;
 import it.mathchallenger.server.controls.DBPartita;
+import it.mathchallenger.server.controls.DBStatistiche;
 import it.mathchallenger.server.controls.GestionePartite;
 import it.mathchallenger.server.entities.Account;
 import it.mathchallenger.server.entities.Domanda;
 import it.mathchallenger.server.entities.Partita;
+import it.mathchallenger.server.entities.Statistiche;
 import it.mathchallenger.server.storage.LoggerManager;
 
 import java.io.IOException;
@@ -420,6 +422,22 @@ public class SocketService implements Runnable {
 							else
 								OutputWrite("search-user=error;message=Usage: search-user nomeutente");
 							break;
+						case "getStatistiche":
+							if(cmd.length==1){
+								if(account==null){
+									OutputWrite("getStatistiche=error;messagge="+ListaErrori.DEVI_ESSERE_LOGGATO);
+									break;
+								}
+								Statistiche stat=DBStatistiche.getInstance().getStatisticheByID(account.getID());
+								if(stat!=null){
+									OutputWrite("getStatistiche=OK;giocate="+stat.getPartite_giocate()+";vinte="+stat.getVittorie()+";perse="+stat.getSconfitte()+";pareggi="+stat.getPareggi()+";abbandoni="+stat.getAbbandonate()+";punti="+stat.getPunti());
+								}
+								else {
+									OutputWrite("getStatistiche=error;messagge="+ListaErrori.RIPROVA_PIU_TARDI);
+								}
+							}
+							else
+								OutputWrite("getStatistiche=error;message=Usage: getStatistiche");
 						case "getDomande":
 							if (cmd.length == 2) {
 								if (account == null) {

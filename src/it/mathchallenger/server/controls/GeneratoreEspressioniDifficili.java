@@ -20,18 +20,44 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 	}
 	@Override
 	public Domanda generaDomanda() {
+		String op_middle=operazioni_easy[rand.nextInt(operazioni_easy.length-1)];
+		String op1="",op2="";
+		switch(op_middle){
+			case "+":
+			case "-":
+			case "*":
+				int r1=rand.nextInt(12);
+				if(r1<3)
+					op1=generaAddizione();
+				else if(r1<6)
+					op1=generaSottrazione();
+				else if(r1<9)
+					op1=generaMoltiplicazione();
+				else
+					op1=generaDivisione();
+				
+				int r2=rand.nextInt(12);
+				if(r2<3)
+					op2=generaAddizione();
+				else if(r2<6)
+					op2=generaSottrazione();
+				else if(r2<9)
+					op2=generaMoltiplicazione();
+				else
+					op2=generaDivisione();
+		}
 		StringBuilder domanda=new StringBuilder("(");
-		domanda.append(generaEasy());
+		domanda.append(op1);
 		domanda.append(")");
-		String op=operazioni_easy[rand.nextInt(operazioni_easy.length-1)];
-		domanda.append(op);
+		domanda.append(op_middle);
 		domanda.append("(");
-		domanda.append(generaEasy());
+		domanda.append(op2);
 		domanda.append(")");
 		
 		Domanda dom=new Domanda();
 		dom.setDomanda(domanda.toString());
 		try {
+			//System.out.println(dom.getDomanda());
 			risolvi(dom);
 			generaRisposteErrate(dom);
 		}
@@ -103,6 +129,7 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 		float res=(float) calc.calculate();
 		d.setRispostaEsatta(res);
 	}
+	/*
 	private String generaEasy(){
 		int[] operatori=new int[2];
 		String op=operazioni_easy[rand.nextInt(operazioni_easy.length)];
@@ -137,6 +164,7 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 			operatori[0]*=(-1);
 		return operatori[0]+op+operatori[1];
 	}
+	*/
 	public static void main(String[] args){
 		Risolutore ris=getInstance();
 		int i=0;
@@ -145,5 +173,43 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
     		System.out.println(d.getDomanda()+ "\t\t"+d.getRispostaEsatta()+" "+d.getRispostaErrata(1)+" "+d.getRispostaErrata(2)+" "+d.getRispostaErrata(3));
     		i++;
 		}
+	}
+	private String generaAddizione(){
+		int op1=rand.nextInt(20)+1;
+		int op2=rand.nextInt(20)+1;
+		if(rand.nextInt(2)<=2)
+			op1*=-1;
+		return op1+"+"+op2;
+	}
+	private String generaSottrazione(){
+		int op1=rand.nextInt(20)+1;
+		int op2=rand.nextInt(op1)+1;
+		return op1+"-"+op2;
+	}
+	private String generaMoltiplicazione(){
+		int op1=rand.nextInt(11)+1;
+		int op2=rand.nextInt(op1);
+		if(rand.nextInt(10)<=2)
+			op1*=-1;
+		return op1+"*"+op2;
+	}
+	private String generaDivisione(){
+		int op1=rand.nextInt(50)+1;
+		ArrayList<Integer> divisori=new ArrayList<Integer>();
+		int op2=op1/2;
+		while(op2>1){
+			if(op1%op2==0)
+				divisori.add(op2);
+			op2--;
+		}
+		if(divisori.size()==0){
+			divisori.add(1);
+			if(op1!=0)
+				divisori.add(op1);
+		}
+		op2=divisori.get(rand.nextInt(divisori.size()));
+		if(rand.nextInt(10)<=2)
+			op1*=-1;
+		return op1+"/"+op2;
 	}
 }
