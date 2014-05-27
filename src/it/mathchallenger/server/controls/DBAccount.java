@@ -236,6 +236,7 @@ public class DBAccount {
 				ResultSet rs = st.getGeneratedKeys();
 				rs.next();
 				int id = rs.getInt(1);
+				DBStatistiche.getInstance().inserisciStatistica(id);
 				rs.close();
 				String auth = generaAuthCode(AUTHCODE_SIZE);
 				acc = new Account(username, auth);
