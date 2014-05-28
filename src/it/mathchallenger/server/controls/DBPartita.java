@@ -316,7 +316,7 @@ public class DBPartita {
 	}
 
 	private Domanda generaDomandaMedia() {
-		return generaDomandaFacile();
+		return generaDomandaMedia();
 	}
 
 	private Domanda generaDomandaDifficile() {

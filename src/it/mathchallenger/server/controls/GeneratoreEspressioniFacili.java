@@ -3,8 +3,6 @@ package it.mathchallenger.server.controls;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import de.congrace.exp4j.Calculable;
-import de.congrace.exp4j.ExpressionBuilder;
 import de.congrace.exp4j.UnknownFunctionException;
 import de.congrace.exp4j.UnparsableExpressionException;
 import it.mathchallenger.server.entities.Domanda;
@@ -85,13 +83,7 @@ public class GeneratoreEspressioniFacili extends Risolutore {
 		generaRisposteErrate(domanda_d, op, 1);
 		return domanda_d;
 	}
-
-	public void risolvi(Domanda d) throws UnknownFunctionException, UnparsableExpressionException {
-		Calculable calc = new ExpressionBuilder(d.getDomanda()).build();
-		float res = (float) calc.calculate();
-		d.setRispostaEsatta(res);
-	}
-
+	
 	private void generaRisposteErrate(Domanda d, String operazione, int domanda) {
 		if (domanda >= 4)
 			return;
@@ -144,14 +136,14 @@ public class GeneratoreEspressioniFacili extends Risolutore {
 				if (domanda == 2) {
 					if (rand.nextBoolean()) {
 						float newErr = d.getRispostaEsatta() + shift;
-						if (!isRispostaErrataGiaPresente(d, newErr, domanda))
+						if (!isPresenteRisposta(d, newErr))
 							d.setRispostaErrata(domanda, newErr);
 						else
 							generaRisposteErrate(d, operazione, domanda);
 					}
 					else {
 						float newErr = d.getRispostaEsatta() - shift;
-						if (!isRispostaErrataGiaPresente(d, newErr, domanda))
+						if (!isPresenteRisposta(d, newErr))
 							d.setRispostaErrata(domanda, newErr);
 						else
 							generaRisposteErrate(d, operazione, domanda);
@@ -160,14 +152,14 @@ public class GeneratoreEspressioniFacili extends Risolutore {
 				else if (domanda == 3) {
 					if (rand.nextBoolean()) {
 						float newErr = d.getRispostaErrata(rand.nextInt(3) + 1) + shift;
-						if (!isRispostaErrataGiaPresente(d, newErr, domanda))
+						if (!isPresenteRisposta(d, newErr))
 							d.setRispostaErrata(domanda, newErr);
 						else
 							generaRisposteErrate(d, operazione, domanda);
 					}
 					else {
 						float newErr = d.getRispostaErrata(rand.nextInt(3) + 1) - shift;
-						if (!isRispostaErrataGiaPresente(d, newErr, domanda))
+						if (!isPresenteRisposta(d, newErr))
 							d.setRispostaErrata(domanda, newErr);
 						else
 							generaRisposteErrate(d, operazione, domanda);
@@ -177,19 +169,5 @@ public class GeneratoreEspressioniFacili extends Risolutore {
 		}
 		generaRisposteErrate(d, operazione, domanda + 1);
 	}
-
-	private boolean isRispostaErrataGiaPresente(Domanda d, float risposta, int domanda) {
-		if (domanda == 2) {
-			if (Float.compare(risposta, d.getRispostaEsatta()) == 0 || Float.compare(risposta, d.getRispostaErrata(1)) == 0)
-				return true;
-		}
-		else if (domanda == 3) {
-			if (Float.compare(risposta, d.getRispostaEsatta()) == 0 || Float.compare(risposta, d.getRispostaErrata(1)) == 0 || Float.compare(risposta, d.getRispostaErrata(2)) == 0)
-				return true;
-		}
-		return false;
-	}
-
 	public void generaRisposteErrate(Domanda d) {}
-
 }

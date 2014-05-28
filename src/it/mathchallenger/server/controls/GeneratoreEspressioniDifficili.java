@@ -1,10 +1,6 @@
 package it.mathchallenger.server.controls;
 
-import java.util.ArrayList;
-
 import it.mathchallenger.server.entities.Domanda;
-import de.congrace.exp4j.Calculable;
-import de.congrace.exp4j.ExpressionBuilder;
 import de.congrace.exp4j.UnknownFunctionException;
 import de.congrace.exp4j.UnparsableExpressionException;
 
@@ -57,7 +53,6 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 		Domanda dom=new Domanda();
 		dom.setDomanda(domanda.toString());
 		try {
-			//System.out.println(dom.getDomanda());
 			risolvi(dom);
 			generaRisposteErrate(dom);
 		}
@@ -84,87 +79,6 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
 			}
 		}
 	}
-	private float getRandomRisposta(Domanda d){
-		if(d.getRispostaErrata(1)==0 && d.getRispostaErrata(2)==0 && d.getRispostaErrata(3)==0)
-			return d.getRispostaEsatta();
-		else {
-			int errate_ok=0;
-			if(d.getRispostaErrata(3)!=0)
-				errate_ok=3;
-			else if(d.getRispostaErrata(2)!=0)
-				errate_ok=2;
-			else if(d.getRispostaErrata(1)!=0)
-				errate_ok=1;
-			else
-				return d.getRispostaEsatta();
-			int rand_n=rand.nextInt(4*(errate_ok+1))/4;
-			switch(rand_n){
-				case 0:
-					return d.getRispostaEsatta();
-				case 1:
-					return d.getRispostaErrata(1);
-				case 2:
-					return d.getRispostaErrata(2);
-				case 3:
-					return d.getRispostaErrata(3);
-				default:
-					return 0;
-			}
-		}
-	}
-	private boolean isPresenteRisposta(Domanda d, float r){
-		if(Float.compare(r, d.getRispostaEsatta())==0)
-			return true;
-		if(Float.compare(r, d.getRispostaErrata(1))==0)
-			return true;
-		if(Float.compare(r, d.getRispostaErrata(2))==0)
-			return true;
-		if(Float.compare(r, d.getRispostaErrata(3))==0)
-			return true;
-		return false;
-	}
-	@Override
-	public void risolvi(Domanda d) throws UnknownFunctionException, UnparsableExpressionException {
-		Calculable calc = new ExpressionBuilder(d.getDomanda()).build();
-		float res=(float) calc.calculate();
-		d.setRispostaEsatta(res);
-	}
-	/*
-	private String generaEasy(){
-		int[] operatori=new int[2];
-		String op=operazioni_easy[rand.nextInt(operazioni_easy.length)];
-		switch(op){
-			case "+":
-			case "-":
-				operatori[0]=rand.nextInt(20)+1;
-				operatori[1]=rand.nextInt(20)+1;
-				break;
-			case "*":
-				operatori[0]=rand.nextInt(11);
-				operatori[1]=rand.nextInt(11);
-				break;
-			case "/":
-				operatori[0]=rand.nextInt(50)+1;
-				ArrayList<Integer> divisori=new ArrayList<Integer>();
-				operatori[1]=operatori[0]/2;
-				while(operatori[1]>1){
-					if(operatori[0]%operatori[1]==0)
-						divisori.add(operatori[1]);
-					operatori[1]--;
-				}
-				if(divisori.size()==0){
-					divisori.add(1);
-					if(operatori[0]!=0)
-						divisori.add(operatori[0]);
-				}
-				operatori[1]=divisori.get(rand.nextInt(divisori.size()));
-				break;
-		}
-		if(rand.nextInt(10)<=2)
-			operatori[0]*=(-1);
-		return operatori[0]+op+operatori[1];
-	}
-	*/
 	public static void main(String[] args){
 		Risolutore ris=getInstance();
 		int i=0;
@@ -173,43 +87,5 @@ public class GeneratoreEspressioniDifficili extends Risolutore {
     		System.out.println(d.getDomanda()+ "\t\t"+d.getRispostaEsatta()+" "+d.getRispostaErrata(1)+" "+d.getRispostaErrata(2)+" "+d.getRispostaErrata(3));
     		i++;
 		}
-	}
-	private String generaAddizione(){
-		int op1=rand.nextInt(20)+1;
-		int op2=rand.nextInt(20)+1;
-		if(rand.nextInt(2)<=2)
-			op1*=-1;
-		return op1+"+"+op2;
-	}
-	private String generaSottrazione(){
-		int op1=rand.nextInt(20)+1;
-		int op2=rand.nextInt(op1)+1;
-		return op1+"-"+op2;
-	}
-	private String generaMoltiplicazione(){
-		int op1=rand.nextInt(11)+1;
-		int op2=rand.nextInt(op1);
-		if(rand.nextInt(10)<=2)
-			op1*=-1;
-		return op1+"*"+op2;
-	}
-	private String generaDivisione(){
-		int op1=rand.nextInt(50)+1;
-		ArrayList<Integer> divisori=new ArrayList<Integer>();
-		int op2=op1/2;
-		while(op2>1){
-			if(op1%op2==0)
-				divisori.add(op2);
-			op2--;
-		}
-		if(divisori.size()==0){
-			divisori.add(1);
-			if(op1!=0)
-				divisori.add(op1);
-		}
-		op2=divisori.get(rand.nextInt(divisori.size()));
-		if(rand.nextInt(10)<=2)
-			op1*=-1;
-		return op1+"/"+op2;
 	}
 }
