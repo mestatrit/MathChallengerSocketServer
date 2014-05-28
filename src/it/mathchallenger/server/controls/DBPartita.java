@@ -42,18 +42,24 @@ public class DBPartita {
 		partita.setInizioPartita(System.currentTimeMillis());
 		partita.setStatoPartita(Partita.CREATA);
 		for(int i=0;i<6;i++){
-			int ra=rand.nextInt(4);
+			int ra=rand.nextInt(10);
 			switch(ra){
 				case 0:
+				case 1:
+				case 2:
+				case 3://40%
 					partita.aggiungiDomanda(generaDomandaFacile());
 					break;
-				case 1:
+				case 4:
+				case 5:
+				case 6://30%
 					partita.aggiungiDomanda(generaDomandaMedia());
 					break;
-				case 2:
+				case 7:
+				case 8://20%
 					partita.aggiungiDomanda(generaDomandaDifficile());
 					break;
-				case 3:
+				case 9://10%
 					partita.aggiungiDomanda(generaDomandaDifficilissima());
 					break;
 				default:
@@ -316,7 +322,10 @@ public class DBPartita {
 	}
 
 	private Domanda generaDomandaMedia() {
-		return generaDomandaMedia();
+		Domanda d = GeneratoreEspressioniMedie.getInstance().generaDomanda();
+		String dom = d.getDomanda().replace('*', 'x').replace('/', ':');
+		d.setDomanda(dom);
+		return d;
 	}
 
 	private Domanda generaDomandaDifficile() {
