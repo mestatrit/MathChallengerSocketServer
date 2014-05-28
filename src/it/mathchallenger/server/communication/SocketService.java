@@ -212,7 +212,16 @@ public class SocketService implements Runnable {
 										}
 										if (sfidato == null)
 											continue;
-										res.append(";partita=" + p.getIDPartita() + "," + sfidato.getID() + "," + sfidato.getUsername() + "," + p.getStatoPartita());
+										boolean inAttesa=false;
+										if(p.getIDUtente1()==account.getID()){
+											if(p.hasUtente1Risposto())
+												inAttesa=true;
+										}
+										else {
+											if(p.hasUtente2Risposto())
+												inAttesa=true;
+										}
+										res.append(";partita=" + p.getIDPartita() + "," + sfidato.getID() + "," + sfidato.getUsername() + "," + p.getStatoPartita()+","+inAttesa);
 									}
 								}
 								OutputWrite(res.toString());
