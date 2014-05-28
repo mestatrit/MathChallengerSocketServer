@@ -26,7 +26,7 @@ public class SocketService implements Runnable {
 	private OutputStream  output;
 	private static int	PING_TIMEOUT = 60000;
 	private static Logger logger	   = LoggerManager.newLogger("SocketService");
-
+	private int[] versioni_valide={1};
 	private Account	   account;
 
 	public SocketService(Socket com) {
@@ -58,6 +58,22 @@ public class SocketService implements Runnable {
 					System.out.println(str);
 					String[] cmd = str.split(" ");
 					switch (cmd[0]) {
+						case "validateVersion":
+							if(cmd.length==2){
+								int versione=Integer.parseInt(cmd[1]);
+								boolean versionOk=false;
+								for(int i=0;i<versioni_valide.length;i++){
+									if(versione==versioni_valide[i]){
+										OutputWrite("validateVersion=OK");
+										versionOk=true;
+										break;
+									}
+								}
+								if(!versionOk)
+									OutputWrite("validateVersion=error;message="+ListaErrori.VERSIONE_NON_VALIDA);
+							}
+							else
+								OutputWrite("validateVersion=error;message=Usage: validateVersion version");
 						case "ping":
 							if (cmd.length == 1) {
 								timer_ping = 0;
