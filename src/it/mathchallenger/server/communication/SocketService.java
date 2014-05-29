@@ -27,7 +27,7 @@ public class SocketService implements Runnable {
 	private OutputStream  output;
 	private static int	PING_TIMEOUT = 60000;
 	private static Logger logger	   = LoggerManager.newLogger("SocketService");
-	private int[] versioni_valide={1};
+	
 	private Account	   account;
 
 	public SocketService(Socket com) {
