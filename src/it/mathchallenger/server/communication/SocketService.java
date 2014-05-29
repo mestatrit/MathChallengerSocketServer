@@ -5,6 +5,7 @@ import it.mathchallenger.server.controls.DBAccount;
 import it.mathchallenger.server.controls.DBPartita;
 import it.mathchallenger.server.controls.DBStatistiche;
 import it.mathchallenger.server.controls.GestionePartite;
+import it.mathchallenger.server.controls.version.VersionCheck;
 import it.mathchallenger.server.entities.Account;
 import it.mathchallenger.server.entities.Domanda;
 import it.mathchallenger.server.entities.Partita;
@@ -61,16 +62,11 @@ public class SocketService implements Runnable {
 						case "validateVersion":
 							if(cmd.length==2){
 								int versione=Integer.parseInt(cmd[1]);
-								boolean versionOk=false;
-								for(int i=0;i<versioni_valide.length;i++){
-									if(versione==versioni_valide[i]){
-										OutputWrite("validateVersion=OK");
-										versionOk=true;
-										break;
-									}
+								if(VersionCheck.getInstance().isVersionOK(versione)){
+									OutputWrite("validateVersion=OK");
 								}
-								if(!versionOk)
-									OutputWrite("validateVersion=error;message="+ListaErrori.VERSIONE_NON_VALIDA);
+								else
+									OutputWrite("validateVersion=error;message="+ListaErrori.VERSIONE_NON_VALIDA);					
 							}
 							else
 								OutputWrite("validateVersion=error;message=Usage: validateVersion version");
