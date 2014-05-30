@@ -459,6 +459,7 @@ public class SocketService implements Runnable {
 							}
 							else
 								OutputWrite("getStatistiche=error;message=Usage: getStatistiche");
+							break;
 						case "getDomande":
 							if (cmd.length == 2) {
 								if (account == null) {
