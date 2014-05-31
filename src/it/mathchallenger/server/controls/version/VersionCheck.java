@@ -16,6 +16,7 @@ public class VersionCheck {
 	}
 	private VersionCheck(){
 		versioni_valide=new ArrayList<Integer>(5);
+		loadFile();
 	}
 	public void loadFile(){
 		versioni_valide.clear();

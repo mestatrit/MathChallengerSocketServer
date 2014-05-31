@@ -1,6 +1,7 @@
 package it.mathchallenger.server.communication;
 
 import it.mathchallenger.server.controls.GestionePartite;
+import it.mathchallenger.server.controls.ranking.Ranking;
 import it.mathchallenger.server.storage.DBConnectionPool;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ public class SocketServer {
 	public static ThreadGroup   thread_utenti_attivi = new ThreadGroup("t_utenti_attivi");
 	private static ServerSocket server			   = null;
 	private static MailSender mailsender = null;
-//	private static Ranking ranking;
+	private static Ranking ranking;
 
 	public static void main(String[] args) throws IOException {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -54,12 +55,11 @@ public class SocketServer {
 		System.out.println("Istanziazione del Gestore delle partite");
 		GestionePartite.getInstance();
 
+		System.out.println("Avvio thread che aggiorna la classifica");
+		ranking=Ranking.getInstance();
+		ranking.start();
+		
 		System.out.println("Tentativo di mettersi in ascolto per ricevere connessioni in arrivo...");
-		
-		//TODO avviare thread aggiornamento classifica
-//		ranking=Ranking.getInstance();
-//		ranking.start();
-		
 		try {
 			server = new ServerSocket(50000);
 			System.out.println("In ascolto in attesa di connessioni...");

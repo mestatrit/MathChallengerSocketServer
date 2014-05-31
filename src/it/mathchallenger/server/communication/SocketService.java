@@ -29,6 +29,7 @@ public class SocketService implements Runnable {
 	private static Logger logger	   = LoggerManager.newLogger("SocketService");
 	
 	private Account	   account;
+	private boolean	   client_version_ok=false;
 
 	public SocketService(Socket com) {
 		comm = com;
