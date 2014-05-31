@@ -71,6 +71,7 @@ public class SocketService implements Runnable {
 							}
 							else
 								OutputWrite("validateVersion=error;message=Usage: validateVersion version");
+							break;
 						case "ping":
 							if (cmd.length == 1) {
 								timer_ping = 0;
@@ -421,10 +422,6 @@ public class SocketService implements Runnable {
 							else
 								OutputWrite("getMyFriends=error;message=Usage: getMyFriends");
 							break;
-
-						case "isValidVersion":
-							break;
-
 						case "search-user":
 							if (cmd.length == 2) {
 								if (account == null) {
@@ -500,6 +497,7 @@ public class SocketService implements Runnable {
 							}
 							else
 								OutputWrite("getDomande=error;message=Usage: getDomande id_partita");
+							break;
 						default:
 							break;
 					}
