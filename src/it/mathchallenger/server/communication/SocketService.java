@@ -12,8 +12,10 @@ import it.mathchallenger.server.entities.Partita;
 import it.mathchallenger.server.entities.Statistiche;
 import it.mathchallenger.server.storage.LoggerManager;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
@@ -21,9 +23,10 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Logger;
 
-public class SocketService implements Runnable {
+public class SocketService extends Thread {
 	private Socket		comm;
 	private InputStream   input;
+	private BufferedReader reader;
 	private OutputStream  output;
 	private static int	PING_TIMEOUT = 60000;
 	private static Logger logger	   = LoggerManager.newLogger("SocketService");
@@ -35,6 +38,7 @@ public class SocketService implements Runnable {
 		comm = com;
 		try {
 			input = com.getInputStream();
+			reader=new BufferedReader(new InputStreamReader(input));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -45,25 +49,23 @@ public class SocketService implements Runnable {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+		setName("NonLoggato");
 	}
 
 	public void run() {
-		byte[] readed = new byte[2048];
-		svuotaBuffer(readed, 2048);
 		int timer_ping = 0;
 		while (!comm.isClosed() && comm.isBound()) {
 			try {
-				int read = 0;
-				if ((read = input.read(readed)) > 0) {
-					String str = new String(readed);
-					str = str.substring(0, read).trim();
-					System.out.println(str);
+				String str;
+				if ((str=reader.readLine())!=null) {
+					str = str.trim();
 					String[] cmd = str.split(" ");
 					switch (cmd[0]) {
 						case "validateVersion":
 							if(cmd.length==2){
 								int versione=Integer.parseInt(cmd[1]);
 								if(VersionCheck.getInstance().isVersionOK(versione)){
+									client_version_ok=true;
 									OutputWrite("validateVersion=OK");
 								}
 								else
@@ -93,6 +95,10 @@ public class SocketService implements Runnable {
 								OutputWrite("exit=error;message=Usage: exit");
 						case "login":
 							if (cmd.length == 3) {
+								if (!client_version_ok){
+									OutputWrite("login=error;message="+ListaErrori.VERSIONE_NON_VALIDA);
+									break;
+								}
 								if (account != null) {
 									OutputWrite("login=error;message="+ListaErrori.SEI_LOGGATO);
 									break;
@@ -104,6 +110,7 @@ public class SocketService implements Runnable {
 								if (account != null) {
 									GestionePartite.getInstance().entraUtente(account);
 									OutputWrite("login=OK;authcode=" + account.getAuthCode() + ";id=" + account.getID());
+									setName(user);
 								}
 								else
 									OutputWrite("login=error");
@@ -113,6 +120,11 @@ public class SocketService implements Runnable {
 							break;
 						case "login-authcode":
 							if (cmd.length == 3) {
+								if (!client_version_ok){
+									OutputWrite("login=error;message="+ListaErrori.VERSIONE_NON_VALIDA);
+									break;
+								}
+								
 								if (account != null) {
 									OutputWrite("login=error;message="+ListaErrori.SEI_LOGGATO);
 									break;
@@ -124,6 +136,7 @@ public class SocketService implements Runnable {
 								if (account != null) {
 									GestionePartite.getInstance().entraUtente(account);
 									OutputWrite("login=OK");
+									setName(account.getUsername());
 								}
 								else
 									OutputWrite("login=error;message="+ListaErrori.INVALID_AUTHCODE);
@@ -501,7 +514,7 @@ public class SocketService implements Runnable {
 						default:
 							break;
 					}
-					svuotaBuffer(readed, 2048);
+					//svuotaBuffer(readed, 2048);
 				}
 				else {
 					timer_ping += 100;
@@ -532,11 +545,6 @@ public class SocketService implements Runnable {
 
 			if (timer_ping > PING_TIMEOUT) {
 				break;
-				/*
-				if (account != null) {
-					break;
-				}
-				*/
 			}
 		}
 
@@ -547,12 +555,6 @@ public class SocketService implements Runnable {
 		else
 			System.out.println("Termine thread connessione");
 	}
-
-	private void svuotaBuffer(byte[] buff, int size) {
-		for (int i = 0; i < size; i++)
-			buff[i] = 0;
-	}
-
 	private boolean closeConnection() {
 		try {
 			comm.close();

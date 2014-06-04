@@ -1,5 +1,6 @@
 package it.mathchallenger.server.communication;
 
+import it.mathchallenger.server.admin.AdminServerSocket;
 import it.mathchallenger.server.controls.GestionePartite;
 import it.mathchallenger.server.controls.ranking.Ranking;
 import it.mathchallenger.server.storage.DBConnectionPool;
@@ -58,6 +59,10 @@ public class SocketServer {
 		System.out.println("Avvio thread che aggiorna la classifica");
 		ranking=Ranking.getInstance();
 		ranking.start();
+		
+		System.out.println("Avvio gestore amministratore");
+		Thread t_admin = new AdminServerSocket();
+		t_admin.start();
 		
 		System.out.println("Tentativo di mettersi in ascolto per ricevere connessioni in arrivo...");
 		try {
