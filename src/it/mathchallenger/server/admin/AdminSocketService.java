@@ -74,21 +74,7 @@ public class AdminSocketService extends Thread {
 								OutputWrite("login=errror;message=Usage: login username password");
 								break;
 							}
-						case "ranking_reload":
-							if(cmd.length==1){
-								if(!logged){
-									OutputWrite("ranking_reload=error;message=Non sei loggato");
-									break;
-								}
-								Ranking.readProperties();
-								OutputWrite("ranking_reload=OK");
-								break;
-							}
-							else {
-								OutputWrite("ranking_reload=error;message=Usage: ranking_reload");
-							}
-							break;
-						case "list_users":
+						case "user_list_online":
 							if(cmd.length==1){
 								if(!logged){
 									OutputWrite("list_users=error;message=Non sei loggato");
@@ -106,11 +92,55 @@ public class AdminSocketService extends Thread {
 							else
 								OutputWrite("list_users=error;message=Usage: list_users");
 							break;
-						case "kick_user":
+						case "user_add":
 							break;
-						case "ban_user":
+						case "user_kick":
 							break;
-						case "delete_user":
+						case "user_ban":
+							break;
+						case "user_delete":
+							break;
+						case "version_get_client_enabled":
+							break;
+						case "version_add_client_enabled":
+							break;
+						case "version_remove_client_enabled":
+							break;
+						case "version_reload_client_enabled":
+							break;
+						case "ranking_change_value":
+							break;
+						case "ranking_change_all_values":
+							break;
+						case "ranking_reload":
+							if(cmd.length==1){
+								if(!logged){
+									OutputWrite("ranking_reload=error;message=Non sei loggato");
+									break;
+								}
+								Ranking.readProperties();
+								OutputWrite("ranking_reload=OK");
+								break;
+							}
+							else {
+								OutputWrite("ranking_reload=error;message=Usage: ranking_reload");
+							}
+							break;
+						case "ranking_force_update":
+							break;
+						case "server_restart":
+							break;
+						case "server_lock_connections":
+							break;
+						case "server_unlock_connections":
+							break;
+						case "server_change_admin":
+							break;
+						case "email_change_value":
+							break;
+						case "email_change_all_values":
+							break;
+						case "email_reload_properties":
 							break;
 					}
 				}
