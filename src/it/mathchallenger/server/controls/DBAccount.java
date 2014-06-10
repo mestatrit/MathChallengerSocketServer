@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import org.apache.commons.mail.EmailException;
-
-import it.mathchallenger.server.communication.MailSender;
+import it.mathchallenger.server.communication.mail.MailSender;
 import it.mathchallenger.server.entities.Account;
 import it.mathchallenger.server.storage.DBConnectionPool;
 import it.mathchallenger.server.storage.LoggerManager;
@@ -250,10 +248,6 @@ public class DBAccount {
 			e.printStackTrace();
 			logger.severe(e.getMessage());
 		}
-		catch (EmailException e) {
-			logger.severe(e.getMessage());
-			e.printStackTrace();
-		}
 		finally {
 			try {
 				if (st != null)
@@ -300,15 +294,8 @@ public class DBAccount {
 			String pass = generaRandomPass();
 			String pass_hash = generaHash(pass);
 			if (salvaPassword(acc.getID(), pass_hash)) {
-				try {
-					MailSender.newPasswordMail(acc.getEmail(), pass);
-					return true;
-				}
-				catch (EmailException e) {
-					logger.severe(e.getMessage());
-					e.printStackTrace();
-					return false;
-				}
+				MailSender.newPasswordMail(acc.getEmail(), pass);
+				return true;
 			}
 			else {
 				return false;
