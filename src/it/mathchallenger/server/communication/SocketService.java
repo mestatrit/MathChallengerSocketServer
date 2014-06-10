@@ -10,6 +10,7 @@ import it.mathchallenger.server.entities.Account;
 import it.mathchallenger.server.entities.Domanda;
 import it.mathchallenger.server.entities.Partita;
 import it.mathchallenger.server.entities.Statistiche;
+import it.mathchallenger.server.errors.ListaErrori;
 import it.mathchallenger.server.storage.LoggerManager;
 
 import java.io.BufferedReader;

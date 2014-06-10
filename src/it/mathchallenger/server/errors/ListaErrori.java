@@ -1,4 +1,4 @@
-package it.mathchallenger.server.communication;
+package it.mathchallenger.server.errors;
 
 public class ListaErrori {
 	public final static int OK = 0,

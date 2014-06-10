@@ -1,7 +1,7 @@
 package it.mathchallenger.server.admin;
 
-import it.mathchallenger.server.communication.SocketServer;
 import it.mathchallenger.server.controls.ranking.Ranking;
+import it.mathchallenger.server.launcher.SocketServer;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

@@ -1,6 +1,7 @@
-package it.mathchallenger.server.communication;
+package it.mathchallenger.server.launcher;
 
 import it.mathchallenger.server.admin.AdminServerSocket;
+import it.mathchallenger.server.communication.SocketService;
 import it.mathchallenger.server.communication.mail.MailSender;
 import it.mathchallenger.server.controls.GestionePartite;
 import it.mathchallenger.server.controls.ranking.Ranking;
