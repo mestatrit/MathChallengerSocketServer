@@ -35,6 +35,9 @@ public class SocketService extends Thread {
 	private Account	   account;
 	private boolean	   client_version_ok=false;
 	private int timer_ping = 0;
+	
+	private final static int LIST_LAST_USER_SIZE=5;
+	private ArrayList<Account> ultime_partite;
 
 	public SocketService(Socket com) {
 		comm = com;
@@ -255,6 +258,7 @@ public class SocketService extends Thread {
 				account = DBAccount.getInstance().login(user, pass);
 				if (account != null) {
 					GestionePartite.getInstance().entraUtente(account);
+					ultime_partite=new ArrayList<Account>(LIST_LAST_USER_SIZE);
 					OutputWrite("login=OK;authcode=" + account.getAuthCode() + ";id=" + account.getID());
 				}
 				else
@@ -281,6 +285,7 @@ public class SocketService extends Thread {
 				account = DBAccount.getInstance().login(id, auth);
 				if (account != null) {
 					GestionePartite.getInstance().entraUtente(account);
+					ultime_partite=new ArrayList<Account>(LIST_LAST_USER_SIZE);
 					OutputWrite("login=OK");
 				}
 				else
@@ -434,17 +439,24 @@ public class SocketService extends Thread {
 				OutputWrite("newgame-random=error;message="+ListaErrori.DEVI_ESSERE_LOGGATO);
 			}
 			else {
-				Account acc_sfidante = GestionePartite.getInstance().accountRandom(account.getID());
+				Account acc_sfidante = GestionePartite.getInstance().accountRandom(account.getID(), ultime_partite);
 				int id_s = acc_sfidante.getID();
 				Partita p = DBPartita.getInstance().creaPartita(account.getID(), id_s < 0 ? 0 : id_s);
 				if (acc_sfidante instanceof Bot) {
 					((Bot) acc_sfidante).aggiungiPartita(p.getIDPartita());
 				}
+				aggiungiUtenteAUltimePartite(acc_sfidante);
 				OutputWrite("newgame-random=OK;id=" + p.getIDPartita());
 			}
 		}
 		else
 			OutputWrite("newgame-random=error;message=Usage: newgame-random");
+	}
+	private void aggiungiUtenteAUltimePartite(Account acc){
+		if(ultime_partite.size()==LIST_LAST_USER_SIZE){
+			ultime_partite.remove(0);
+		}
+		ultime_partite.add(acc);
 	}
 	private void getDettagliPartita(String[] cmd) throws IOException {
 		if (cmd.length == 2) {

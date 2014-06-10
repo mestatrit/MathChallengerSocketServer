@@ -81,7 +81,7 @@ public class GestionePartite {
 
 	private static Random rand;
 
-	public Account accountRandom(int id_ricercante) {
+	public Account accountRandom(int id_ricercante, ArrayList<Account> last) {
 		if (utenti_loggati.size() <= 1) { // l'utente loggato è l'utente che
 										  // cerca
 			return getBotRandom();
@@ -92,13 +92,19 @@ public class GestionePartite {
 				int acc_ind = rand.nextInt(utenti_loggati.size());
 				if(acc_ind<utenti_loggati.size()){
     				Account acc = utenti_loggati.get(acc_ind);
-    				if (acc.getID() != id_ricercante)
+    				if (acc.getID() != id_ricercante && !isInLastUsers(acc.getID(), last))
     					return acc;
     				}
 				prove++;
 			}
 			return getBotRandom();
 		}
+	}
+	private boolean isInLastUsers(int id, ArrayList<Account> list){
+		for(int i=0;i<list.size();i++)
+			if(list.get(i).getID()==id)
+				return true;
+		return false;
 	}
 
 	private void loadBot() {
