@@ -16,6 +16,7 @@ public class MailSender extends Thread{
 		if (!instanced) {
 			readProperties();
 			thread_invio=new ThreadInvioMessaggi();
+			thread_invio.start();
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				public void run() {
 					// TODO salvataggio in database
