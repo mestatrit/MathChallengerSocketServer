@@ -39,4 +39,7 @@ public class VersionCheck {
 		}
 		return false;
 	}
+	public ArrayList<Integer> getValidVersions(){
+		return versioni_valide;
+	}
 }

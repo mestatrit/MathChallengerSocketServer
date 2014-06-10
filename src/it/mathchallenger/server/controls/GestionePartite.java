@@ -149,4 +149,7 @@ public class GestionePartite {
 			t_bot.start();
 		}
 	}
+	public ArrayList<Account> listUsers(){
+		return utenti_loggati;
+	}
 }

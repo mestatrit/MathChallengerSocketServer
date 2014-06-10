@@ -1,6 +1,9 @@
 package it.mathchallenger.server.admin;
 
+import it.mathchallenger.server.controls.GestionePartite;
 import it.mathchallenger.server.controls.ranking.Ranking;
+import it.mathchallenger.server.controls.version.VersionCheck;
+import it.mathchallenger.server.entities.Account;
 import it.mathchallenger.server.launcher.SocketServer;
 
 import java.io.BufferedReader;
@@ -10,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Properties;
 
 public class AdminSocketService extends Thread {
@@ -60,6 +64,7 @@ public class AdminSocketService extends Thread {
 						case "user_delete":
 							break;
 						case "version_get_client_enabled":
+							version_getVersioniAbilitate(cmd);
 							break;
 						case "version_add_client_enabled":
 							break;
@@ -83,6 +88,8 @@ public class AdminSocketService extends Thread {
 						case "server_unlock_connections":
 							break;
 						case "server_change_admin":
+							break;
+						case "server_stop_admin_connections":
 							break;
 						case "email_change_value":
 							break;
@@ -170,20 +177,19 @@ public class AdminSocketService extends Thread {
 	private void user_list_online(String[] cmd) throws IOException{
 		if(cmd.length==1){
 			if(!logged){
-				OutputWrite("list_users=error;message=Non sei loggato");
+				OutputWrite("user_list_online=error;message=Non sei loggato");
 			}
 			else {
-				StringBuilder resp=new StringBuilder("list_users=OK;loggati="+SocketServer.thread_utenti_attivi.activeCount());
-				Thread[] list=new Thread[SocketServer.thread_utenti_attivi.activeCount()];
-				SocketServer.thread_utenti_attivi.enumerate(list);
-				for(int i=0;i<list.length;i++){
-					resp.append(";utente="+list[i].getName());
+				ArrayList<Account> list=GestionePartite.getInstance().listUsers();
+				StringBuilder resp=new StringBuilder("user_list_online=OK;client_attivi="+SocketServer.thread_utenti_attivi.activeCount()+";loggati="+list.size());
+				for(int i=0;i<list.size();i++){
+					resp.append(";utente="+list.get(i).getUsername()+","+list.get(i).getID());
 				}
 				OutputWrite(resp.toString());
 			}
 		}
 		else
-			OutputWrite("list_users=error;message=Usage: list_users");
+			OutputWrite("user_list_online=error;message=Usage: list_users");
 	}
 	private void ranking_reload(String[] cmd) throws IOException{
 		if(cmd.length==1){
@@ -197,6 +203,24 @@ public class AdminSocketService extends Thread {
 		}
 		else {
 			OutputWrite("ranking_reload=error;message=Usage: ranking_reload");
+		}
+	}
+	private void version_getVersioniAbilitate(String[] cmd) throws IOException{
+		if(cmd.length==1){
+			if(logged){
+				ArrayList<Integer> v=VersionCheck.getInstance().getValidVersions();
+				StringBuilder str=new StringBuilder("version_get_client_enabled=OK");
+				for(int i=0;i<v.size();i++){
+					str.append(";version="+v.get(i));
+				}
+				OutputWrite(str.toString());
+			}
+			else {
+				OutputWrite("version_get_client_enabled=error");
+			}
+		}
+		else {
+			OutputWrite("version_get_client_enabled=error");
 		}
 	}
 }
