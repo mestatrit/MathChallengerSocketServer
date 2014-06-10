@@ -253,7 +253,7 @@ public class DBPartita {
 		}
 		else if (p.getFinePartita() <= System.currentTimeMillis()) { // tempo
 																	 // scaduto
-			System.out.println("tempo scaduto");
+			//System.out.println("tempo scaduto");
 			if (p.hasUtente1Risposto()) { // se soltanto l'utente 1 ha risposto
 				p.setStatoPartita(Partita.VINCITORE_1);
 				DBStatistiche.getInstance().aggiungiVittoriaAtUser(p.getIDUtente1());
@@ -290,7 +290,7 @@ public class DBPartita {
 	}
 
 	private void aggiornaStatoPartita(Partita d) {
-		System.out.println("Aggiornamento stato partita " + d.getIDPartita() + " allo stato " + d.getStatoPartita());
+		//System.out.println("Aggiornamento stato partita " + d.getIDPartita() + " allo stato " + d.getStatoPartita());
 		Connection con = null;
 		PreparedStatement st = null;
 		try {

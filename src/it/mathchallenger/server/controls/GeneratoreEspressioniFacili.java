@@ -58,7 +58,7 @@ public class GeneratoreEspressioniFacili extends Risolutore {
 					op2 = divisori.get(rand.nextInt(divisori.size()));
 					break;
 				default:
-					System.out.println("Operatore non valido");
+					//System.out.println("Operatore non valido");
 					break;
 			}
 		}
@@ -69,7 +69,7 @@ public class GeneratoreEspressioniFacili extends Risolutore {
 		if (rand.nextInt(10) <= 2)
 			op1 *= (-1);
 		String domanda = op1 + op + op2;
-		System.out.println("Domanda: " + domanda);
+		//System.out.println("Domanda: " + domanda);
 		Domanda domanda_d = new Domanda();
 		domanda_d.setDomanda(domanda);
 		try {

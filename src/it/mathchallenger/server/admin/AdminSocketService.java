@@ -43,54 +43,13 @@ public class AdminSocketService extends Thread {
 					String[] cmd=str.trim().split(" ");
 					switch(cmd[0]){
 						case "logout":
-							if(cmd.length==1){
-								if(!logged){
-									OutputWrite("logout=error;message=Non sei loggato");
-									break;
-								}
-								OutputWrite("logout=OK");
-								comm.close();
-								break;
-							}
-							else {
-								OutputWrite("logout=error;message=Usage: logout");
-							}
+							logout(cmd);
 							break;
 						case "login":
-							if(cmd.length==3){
-								String u=cmd[1];
-								String p=cmd[2];
-								if(login(u,p)){
-									logged=true;
-									OutputWrite("login=OK");
-								}
-								else {
-									logged=false;
-									OutputWrite("login=error;message=Invalid username or password");
-								}
-								break;
-							}
-							else {
-								OutputWrite("login=errror;message=Usage: login username password");
-								break;
-							}
+							login(cmd);
+							break;
 						case "user_list_online":
-							if(cmd.length==1){
-								if(!logged){
-									OutputWrite("list_users=error;message=Non sei loggato");
-									break;
-								}
-								StringBuilder resp=new StringBuilder("list_users=OK;loggati="+SocketServer.thread_utenti_attivi.activeCount());
-								Thread[] list=new Thread[SocketServer.thread_utenti_attivi.activeCount()];
-								SocketServer.thread_utenti_attivi.enumerate(list);
-								for(int i=0;i<list.length;i++){
-									resp.append(";utente="+list[i].getName());
-								}
-								OutputWrite(resp.toString());
-								break;
-							}
-							else
-								OutputWrite("list_users=error;message=Usage: list_users");
+							user_list_online(cmd);
 							break;
 						case "user_add":
 							break;
@@ -113,18 +72,7 @@ public class AdminSocketService extends Thread {
 						case "ranking_change_all_values":
 							break;
 						case "ranking_reload":
-							if(cmd.length==1){
-								if(!logged){
-									OutputWrite("ranking_reload=error;message=Non sei loggato");
-									break;
-								}
-								Ranking.readProperties();
-								OutputWrite("ranking_reload=OK");
-								break;
-							}
-							else {
-								OutputWrite("ranking_reload=error;message=Usage: ranking_reload");
-							}
+							ranking_reload(cmd);
 							break;
 						case "ranking_force_update":
 							break;
@@ -168,6 +116,23 @@ public class AdminSocketService extends Thread {
 		output.write(s.getBytes());
 		output.flush();
 	}
+	private void login(String[] cmd) throws IOException{
+		if(cmd.length==3){
+			String u=cmd[1];
+			String p=cmd[2];
+			if(login(u,p)){
+				logged=true;
+				OutputWrite("login=OK");
+			}
+			else {
+				logged=false;
+				OutputWrite("login=error;message=Invalid username or password");
+			}
+		}
+		else {
+			OutputWrite("login=errror;message=Usage: login username password");
+		}
+	}
 	private boolean login(String u, String p){
 		Properties prop=new Properties();
 		InputStream in;
@@ -187,5 +152,51 @@ public class AdminSocketService extends Thread {
 			login = false;
 		prop.clear();
 		return login;
+	}
+	private void logout(String[] cmd) throws IOException{
+		if(cmd.length==1){
+			if(!logged){
+				OutputWrite("logout=error;message=Non sei loggato");
+			}
+			else {
+				OutputWrite("logout=OK");
+				comm.close();
+			}
+		}
+		else {
+			OutputWrite("logout=error;message=Usage: logout");
+		}
+	}
+	private void user_list_online(String[] cmd) throws IOException{
+		if(cmd.length==1){
+			if(!logged){
+				OutputWrite("list_users=error;message=Non sei loggato");
+			}
+			else {
+				StringBuilder resp=new StringBuilder("list_users=OK;loggati="+SocketServer.thread_utenti_attivi.activeCount());
+				Thread[] list=new Thread[SocketServer.thread_utenti_attivi.activeCount()];
+				SocketServer.thread_utenti_attivi.enumerate(list);
+				for(int i=0;i<list.length;i++){
+					resp.append(";utente="+list[i].getName());
+				}
+				OutputWrite(resp.toString());
+			}
+		}
+		else
+			OutputWrite("list_users=error;message=Usage: list_users");
+	}
+	private void ranking_reload(String[] cmd) throws IOException{
+		if(cmd.length==1){
+			if(!logged){
+				OutputWrite("ranking_reload=error;message=Non sei loggato");
+			}
+			else{
+				Ranking.readProperties();
+				OutputWrite("ranking_reload=OK");
+			}
+		}
+		else {
+			OutputWrite("ranking_reload=error;message=Usage: ranking_reload");
+		}
 	}
 }
