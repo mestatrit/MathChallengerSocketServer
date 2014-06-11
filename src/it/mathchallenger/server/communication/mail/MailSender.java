@@ -1,6 +1,8 @@
 package it.mathchallenger.server.communication.mail;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -58,5 +60,29 @@ public class MailSender extends Thread{
 		InputStream in = new FileInputStream("mail.properties");
 		email_prop.load(in);
 		in.close();
+	}
+	public static boolean changeValue(String key, String val) {
+		if(email_prop.containsKey(key)){
+			email_prop.setProperty(key, val);
+			return true;
+		}
+		else
+			return false;
+	}
+	public static boolean saveToFile() {
+		try {
+			FileOutputStream fo=new FileOutputStream("mail.properties");
+			email_prop.store(fo, "");
+			fo.close();
+			return true;
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+		
 	}
 }

@@ -1,5 +1,7 @@
 package it.mathchallenger.server.admin;
 
+import it.mathchallenger.server.communication.mail.MailSender;
+import it.mathchallenger.server.controls.DBAccount;
 import it.mathchallenger.server.controls.GestionePartite;
 import it.mathchallenger.server.controls.ranking.Ranking;
 import it.mathchallenger.server.controls.version.VersionCheck;
@@ -61,25 +63,32 @@ public class AdminSocketService extends Thread {
 							break;
 						case "user_ban":
 							break;
-						case "user_delete":
+						case "user_delete_username":
+							user_delete_username(cmd);
+							break;
+						case "user_delete_id":
+							user_delete_id(cmd);
 							break;
 						case "version_get_client_enabled":
 							version_getVersioniAbilitate(cmd);
 							break;
 						case "version_add_client_enabled":
+							version_add_client_enabled(cmd);
 							break;
 						case "version_remove_client_enabled":
+							version_remove_client_enabled(cmd);
 							break;
 						case "version_reload_client_enabled":
-							break;
-						case "ranking_change_value":
+							version_reload_client_enabled(cmd);
 							break;
 						case "ranking_change_all_values":
+							ranking_change_all_values(cmd);
 							break;
 						case "ranking_reload":
 							ranking_reload(cmd);
 							break;
 						case "ranking_force_update":
+							ranking_force_update(cmd);
 							break;
 						case "server_restart":
 							break;
@@ -91,11 +100,11 @@ public class AdminSocketService extends Thread {
 							break;
 						case "server_stop_admin_connections":
 							break;
-						case "email_change_value":
-							break;
 						case "email_change_all_values":
+							email_change_all_values(cmd);
 							break;
 						case "email_reload_properties":
+							email_reload_properties(cmd);
 							break;
 					}
 				}
@@ -104,7 +113,12 @@ public class AdminSocketService extends Thread {
 				}
 			}
 			catch(IOException e){
-				
+				try {
+					OutputWrite("generic=error");
+				} 
+				catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 			try {
 				sleep(200);
@@ -116,6 +130,193 @@ public class AdminSocketService extends Thread {
 				break;
 		}
 		System.out.println("Thread admin terminato");
+	}
+	private void email_reload_properties(String[] cmd) throws IOException {
+		if(cmd.length==1){
+			if(logged){
+				MailSender.readProperties();
+				OutputWrite("email_reload_properties=OK");
+			}
+			else {
+				OutputWrite("email_reload_properties=error");
+			}
+		}
+		else {
+			OutputWrite("email_reload_properties=error");
+		}
+	}
+	private void ranking_change_all_values(String[] cmd) throws IOException {
+		if(cmd.length%2!=0){
+			if(logged){
+				boolean okChange=true;
+				for(int i=0;i<cmd.length;i=i+2){
+					okChange=Ranking.getInstance().changeValue(cmd[i], cmd[i+1]);
+					if(!okChange)
+						break;
+				}
+				if(okChange)
+					Ranking.getInstance().saveToFile();
+				else
+					Ranking.getInstance().readProperties();
+				OutputWrite("ranking_change_all_values="+(okChange?"OK":"error"));
+			}
+			else {
+				OutputWrite("ranking_change_all_values=error");
+			}
+		}
+		else {
+			OutputWrite("ranking_change_all_values=error");
+		}
+	}
+	private void email_change_all_values(String[] cmd) throws IOException {
+		if(cmd.length%2!=0){
+			if(logged){
+				boolean okChange=true;
+				for(int i=0;i<cmd.length;i=i+2){
+					okChange=MailSender.changeValue(cmd[i], cmd[i+1]);
+					if(!okChange)
+						break;
+				}
+				if(okChange)
+					MailSender.saveToFile();
+				else
+					MailSender.readProperties();
+				OutputWrite("email_change_all_values="+(okChange?"OK":"error"));
+			}
+			else {
+				OutputWrite("email_change_all_values=error");
+			}
+		}
+		else {
+			OutputWrite("email_change_all_values=error");
+		}
+	}
+	/*
+	private void ranking_change_value(String[] cmd) throws IOException {
+		if(cmd.length==3){
+			if(logged){
+				boolean b=Ranking.getInstance().changeValue(cmd[1], cmd[2]);
+				if(b){
+					if(Ranking.getInstance().saveToFile())
+						OutputWrite("ranking_change_value=OK");
+					else
+						OutputWrite("ranking_change_value=error");
+				}
+				else {
+					OutputWrite("ranking_change_value=error");
+				}
+			}
+			else {
+				OutputWrite("ranking_change_value=error");
+			}
+		}
+		else {
+			OutputWrite("ranking_change_value=error");
+		}
+	}
+	*/
+	private void ranking_force_update(String[] cmd) throws IOException {
+		if(cmd.length==1){
+			if(logged){
+				boolean b=Ranking.getInstance().forceUpdate();
+				OutputWrite("ranking_force_update="+(b?"OK":"error"));
+			}
+			else {
+				OutputWrite("ranking_force_update=error");
+			}
+		}
+		else {
+			OutputWrite("ranking_force_update=error");
+		}
+	}
+	private void version_reload_client_enabled(String[] cmd) throws IOException {
+		if(cmd.length==1){
+			if(logged){
+				VersionCheck.getInstance().loadFile();
+				OutputWrite("version_reload_client_enabled=OK");
+			}
+			else{
+				OutputWrite("version_reload_client_enabled=error");
+			}
+		}
+		else {
+			OutputWrite("version_reload_client_enabled=error");
+		}
+	}
+	private void version_remove_client_enabled(String[] cmd) throws IOException {
+		if(cmd.length==2){
+			if(logged){
+				try{
+					Integer i=Integer.parseInt(cmd[1]);
+					boolean b=VersionCheck.getInstance().rimuoviVersione(i);
+					OutputWrite("version_remove_client_enabled="+(b?"OK":"error"));
+				}
+				catch(NumberFormatException e){
+					OutputWrite("version_remove_client_enabled=error");
+				}
+			}
+			else {
+				OutputWrite("version_remove_client_enabled=error");
+			}
+		}
+		else {
+			OutputWrite("version_remove_client_enabled=error");
+		}
+	}
+	private void version_add_client_enabled(String[] cmd) throws IOException {
+		if(cmd.length==2){
+			if(logged){
+				try{
+					Integer i=Integer.parseInt(cmd[1]);
+					boolean b=VersionCheck.getInstance().aggiungiVersione(i);
+					OutputWrite("version_add_client_enabled="+(b?"OK":"error"));
+				}
+				catch(NumberFormatException e){
+					OutputWrite("version_add_client_enabled=error");
+				}
+			}
+			else {
+				OutputWrite("version_add_client_enabled=error");
+			}
+		}
+		else {
+			OutputWrite("version_add_client_enabled=error");
+		}
+		
+	}
+	private void user_delete_id(String[] cmd) throws IOException {
+		if(cmd.length==2){
+			if(logged){
+				try {
+					Integer id=Integer.parseInt(cmd[1]);
+					boolean del=DBAccount.getInstance().cancellaAccount(id);
+					OutputWrite("user_delete_id="+(del?"OK":"error"));
+				}
+				catch(NumberFormatException e){
+					OutputWrite("user_delete_id=error");
+				}
+			}
+			else {
+				OutputWrite("user_delete_id=error");
+			}
+		}
+		else {
+			OutputWrite("user_delete_id=error");
+		}
+	}
+	private void user_delete_username(String[] cmd) throws IOException {
+		if(cmd.length==2){
+			if(logged){
+				boolean del=DBAccount.getInstance().cancellaAccount(cmd[1]);
+				OutputWrite("user_delete_username="+(del?"OK":"error"));
+			}
+			else {
+				OutputWrite("user_delete_username=error");
+			}
+		}
+		else {
+			OutputWrite("user_delete_username=error");
+		}
 	}
 	private void OutputWrite(String s) throws IOException {
 		if (!s.endsWith("\n"))
@@ -197,7 +398,7 @@ public class AdminSocketService extends Thread {
 				OutputWrite("ranking_reload=error;message=Non sei loggato");
 			}
 			else{
-				Ranking.readProperties();
+				Ranking.getInstance().readProperties();
 				OutputWrite("ranking_reload=OK");
 			}
 		}

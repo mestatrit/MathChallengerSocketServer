@@ -5,6 +5,8 @@ import it.mathchallenger.server.storage.DBConnectionPool;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,7 +34,7 @@ public class Ranking extends Thread {
 		readProperties();
 	}
 
-	public static void readProperties() {
+	public void readProperties() {
 		if (properties == null)
 			properties = new Properties();
 		properties.clear();
@@ -69,7 +71,6 @@ public class Ranking extends Thread {
 				}
 			}
 		}
-
 	}
 
 	private void pubblica(ArrayList<EntryClassifica> stats) throws IOException {
@@ -140,13 +141,42 @@ public class Ranking extends Thread {
 		return classifica;
 	}
 
-	public static void main(String[] args) throws ClassNotFoundException, IOException, SQLException {
-		DBConnectionPool.init();
-		Ranking r = new Ranking();
-		r.start();
-	}
-
 	public ArrayList<EntryClassifica> getClassifica() {
 		return classifica;
+	}
+	
+	public boolean forceUpdate(){
+		ArrayList<EntryClassifica> stat = getRankingFromDB();
+		try {
+			pubblica(stat);
+			return true;
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	public boolean changeValue(String key, String val){
+		if(properties.containsKey(key)){
+			properties.setProperty(key, val);
+			return true;
+		}
+		else
+			return false;
+	}
+	public boolean saveToFile(){
+		try {
+			FileOutputStream fo=new FileOutputStream("ranking.properties");
+			properties.store(fo, "");
+			fo.close();
+			return true;
+		} 
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

@@ -456,20 +456,6 @@ public class DBAccount {
 		return acc;
 	}
 
-	/*
-	 * private Account getAccountByEmail(String email){ Connection con=null;
-	 * PreparedStatement st=null; ResultSet rs=null; Account acc=null; try {
-	 * con=DBConnectionPool.getConnection(); String
-	 * query="SELECT * FROM account WHERE email=\""+email+"\"";
-	 * st=con.prepareStatement(query); rs=st.executeQuery(); if(rs.next()){
-	 * acc=new Account(); String auth=rs.getString("authcode"); String
-	 * username=rs.getString("username"); int id=rs.getInt("id");
-	 * acc.setUsername(username); acc.setID(id); acc.setEmail(email);
-	 * acc.setAuthCode(auth); } } catch (SQLException e) {} finally { try {
-	 * if(rs!=null) rs.close(); if(st!=null) st.close(); if(con!=null)
-	 * DBConnectionPool.releaseConnection(con); } catch (SQLException e) {} }
-	 * return acc; }
-	 */
 	private boolean salvaPassword(int id, String password) {
 		Connection con = null;
 		PreparedStatement st = null;
@@ -589,5 +575,56 @@ public class DBAccount {
 			}
 		}
 		return amici;
+	}
+	
+	public boolean cancellaAccount(int id){
+		Connection con=null;
+		PreparedStatement st=null;
+		try {
+			con=DBConnectionPool.getConnection();
+			String query="DELETE FROM account WHERE id="+id;
+			st=con.prepareStatement(query);
+			return st.executeUpdate()>0;
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		finally {
+			if(st!=null)
+				try {
+					st.close();
+				} 
+				catch (SQLException e) {
+					e.printStackTrace();
+				}
+			if(con!=null)
+				DBConnectionPool.releaseConnection(con);
+		}
+	}
+	public boolean cancellaAccount(String u){
+		Connection con=null;
+		PreparedStatement st=null;
+		try {
+			con=DBConnectionPool.getConnection();
+			String query="DELETE FROM account WHERE username="+u;
+			st=con.prepareStatement(query);
+			return st.executeUpdate()>0;
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		finally {
+			if(st!=null)
+				try {
+					st.close();
+				} 
+				catch (SQLException e) {
+					e.printStackTrace();
+				}
+			if(con!=null)
+				DBConnectionPool.releaseConnection(con);
+		}
 	}
 }
