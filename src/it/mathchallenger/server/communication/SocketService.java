@@ -5,6 +5,7 @@ import it.mathchallenger.server.controls.DBAccount;
 import it.mathchallenger.server.controls.DBPartita;
 import it.mathchallenger.server.controls.DBStatistiche;
 import it.mathchallenger.server.controls.GestionePartite;
+import it.mathchallenger.server.controls.ranking.Ranking;
 import it.mathchallenger.server.controls.version.VersionCheck;
 import it.mathchallenger.server.entities.Account;
 import it.mathchallenger.server.entities.Domanda;
@@ -635,7 +636,7 @@ public class SocketService extends Thread {
 			else {
 				Statistiche stat=DBStatistiche.getInstance().getStatisticheByID(account.getID());
 				if(stat!=null){
-					OutputWrite("getStatistiche=OK;giocate="+stat.getPartite_giocate()+";vinte="+stat.getVittorie()+";perse="+stat.getSconfitte()+";pareggi="+stat.getPareggi()+";abbandoni="+stat.getAbbandonate()+";punti="+stat.getPunti());
+					OutputWrite("getStatistiche=OK;url_classifica="+Ranking.getInstance().getURLRanking()+";giocate="+stat.getPartite_giocate()+";vinte="+stat.getVittorie()+";perse="+stat.getSconfitte()+";pareggi="+stat.getPareggi()+";abbandoni="+stat.getAbbandonate()+";punti="+stat.getPunti());
 				}
 				else {
 					OutputWrite("getStatistiche=error;messagge="+ListaErrori.RIPROVA_PIU_TARDI);

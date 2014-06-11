@@ -149,7 +149,7 @@ public class AdminSocketService extends Thread {
 		if(cmd.length%2!=0){
 			if(logged){
 				boolean okChange=true;
-				for(int i=0;i<cmd.length;i=i+2){
+				for(int i=1;i<cmd.length;i=i+2){
 					okChange=Ranking.getInstance().changeValue(cmd[i], cmd[i+1]);
 					if(!okChange)
 						break;
@@ -172,7 +172,7 @@ public class AdminSocketService extends Thread {
 		if(cmd.length%2!=0){
 			if(logged){
 				boolean okChange=true;
-				for(int i=0;i<cmd.length;i=i+2){
+				for(int i=1;i<cmd.length;i=i+2){
 					okChange=MailSender.changeValue(cmd[i], cmd[i+1]);
 					if(!okChange)
 						break;

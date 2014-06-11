@@ -179,4 +179,7 @@ public class Ranking extends Thread {
 		}
 		return false;
 	}
+	public String getURLRanking(){
+		return properties.getProperty("URL_Ranking");
+	}
 }
