@@ -19,7 +19,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Random;
 
 public class SocketService extends Thread {
@@ -55,7 +55,7 @@ public class SocketService extends Thread {
 	}
 	
 	private boolean closeConnection() {
-		if(comm.isClosed())
+		if(comm==null || comm.isClosed())
 			return true;
 		try {
 			comm.shutdownInput();
@@ -63,7 +63,8 @@ public class SocketService extends Thread {
 			comm.close();
 			buffer=null;
 			str_buffer=null;
-			ultime_partite.clear();
+			if(ultime_partite!=null)
+				ultime_partite.clear();
 			ultime_partite=null;
 			account=null;
 			rand=null;
@@ -112,8 +113,23 @@ public class SocketService extends Thread {
 	}
 	private String data(){
 		String data=null;
-		Date d=new Date(System.currentTimeMillis());
-		data=(d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+		//Date d=new Date(System.currentTimeMillis());
+		Calendar d=Calendar.getInstance();
+		int anno=d.get(Calendar.YEAR);
+		int mese=d.get(Calendar.MONTH)+1;
+		int giorno=d.get(Calendar.DAY_OF_MONTH);
+		int ore=d.get(Calendar.HOUR_OF_DAY);
+		int minuti=d.get(Calendar.MINUTE);
+		int secondi=d.get(Calendar.SECOND);
+		int milli=d.get(Calendar.MILLISECOND);
+		String milli_s="";
+		if(milli<10)
+			milli_s="00"+milli;
+		else if(milli<100)
+			milli_s="0"+milli;
+		else
+			milli_s=""+milli;
+		data=(anno+"-"+(mese<10?"0"+mese:mese)+"-"+(giorno<10?"0"+giorno:giorno)+" "+(ore<10?"0"+ore:ore)+":"+(minuti<10?"0"+minuti:minuti)+":"+(secondi<10?"0"+secondi:secondi)+"."+milli_s);
 		return data;
 	}
 	public void run() {
@@ -124,7 +140,7 @@ public class SocketService extends Thread {
 			try {
 				if ((str_buffer=readLine(buffer))!=null) {
 					str_buffer = str_buffer.trim();
-					System.out.println("["+data()+"]"+"Comando arrivato [len="+str_buffer.length()+"]: "+str_buffer);
+					//System.out.println("["+data()+"]"+"Comando arrivato [len="+str_buffer.length()+"]: "+str_buffer);
 					String[] cmd = str_buffer.split(" ");
 					commandOK=true;
 					switch (cmd[0]) {
@@ -203,7 +219,7 @@ public class SocketService extends Thread {
 				}
 				else {
 					timer_ping += TIME_PING;
-					System.out.println("Incremento il ping: "+timer_ping);
+					//System.out.println("Incremento il ping: "+timer_ping);
 				}
 			}
 			catch (SocketException e) {
@@ -214,11 +230,11 @@ public class SocketService extends Thread {
 				e.printStackTrace();
 			}
 			
-			System.out.print("["+data()+"]");
-			System.out.println("Current time ping: "+timer_ping+"/"+PING_TIMEOUT);
+			//System.out.print("["+data()+"]");
+			//System.out.println("Current time ping: "+timer_ping+"/"+PING_TIMEOUT);
 			try {
-				System.out.print("["+data()+"]");
-				System.out.println("sleep_"+TIME_PING);
+				//System.out.print("["+data()+"]");
+				//System.out.println("sleep_"+TIME_PING);
 				Thread.sleep(TIME_PING);
 			}
 			catch (InterruptedException e) {
