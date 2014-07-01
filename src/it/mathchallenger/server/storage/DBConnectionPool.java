@@ -53,7 +53,6 @@ public class DBConnectionPool {
 	 * @return A db connection
 	 * @throws SQLException
 	 */
-	@SuppressWarnings("resource")
 	public static synchronized Connection getConnection() throws SQLException {
 		Connection connection;
 

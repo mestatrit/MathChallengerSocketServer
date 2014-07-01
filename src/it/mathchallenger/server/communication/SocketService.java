@@ -12,30 +12,28 @@ import it.mathchallenger.server.entities.Domanda;
 import it.mathchallenger.server.entities.Partita;
 import it.mathchallenger.server.entities.Statistiche;
 import it.mathchallenger.server.errors.ListaErrori;
-import it.mathchallenger.server.storage.LoggerManager;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
-import java.util.logging.Logger;
 
 public class SocketService extends Thread {
 	private Socket		comm;
 	private InputStream   input;
-	private BufferedReader reader;
 	private OutputStream  output;
 	private static int	PING_TIMEOUT = 60000;
-	private static Logger logger	   = LoggerManager.newLogger("SocketService");
+	private static int TIME_PING = 200;
 	
 	private Account	   account;
 	private boolean	   client_version_ok=false;
 	private int timer_ping = 0;
+	private byte[] buffer;
+	private String str_buffer;
 	
 	private final static int LIST_LAST_USER_SIZE=5;
 	private ArrayList<Account> ultime_partite;
@@ -44,7 +42,6 @@ public class SocketService extends Thread {
 		comm = com;
 		try {
 			input = com.getInputStream();
-			reader=new BufferedReader(new InputStreamReader(input));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -58,8 +55,18 @@ public class SocketService extends Thread {
 	}
 	
 	private boolean closeConnection() {
+		if(comm.isClosed())
+			return true;
 		try {
+			comm.shutdownInput();
+			comm.shutdownOutput();
 			comm.close();
+			buffer=null;
+			str_buffer=null;
+			ultime_partite.clear();
+			ultime_partite=null;
+			account=null;
+			rand=null;
 			return true;
 		}
 		catch (IOException e) {
@@ -73,6 +80,15 @@ public class SocketService extends Thread {
 			s += "\n";
 		output.write(s.getBytes());
 		output.flush();
+	}
+	private String readLine(byte[] buffer) throws IOException{
+		if(input.available()>0){
+			int read=input.read(buffer);
+			if(read>0){
+				return new String(buffer, 0, read);
+			}
+		}
+		return null;
 	}
 
 	private Random rand = new Random();
@@ -94,14 +110,23 @@ public class SocketService extends Thread {
 			return "NonLoggato";
 		return account.getUsername();
 	}
-	
+	private String data(){
+		String data=null;
+		Date d=new Date(System.currentTimeMillis());
+		data=(d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+		return data;
+	}
 	public void run() {
+		str_buffer = null;
+		buffer = new byte[1024];
+		boolean commandOK=true;
 		while (!comm.isClosed() && comm.isBound()) {
 			try {
-				String str;
-				if ((str=reader.readLine())!=null) {
-					str = str.trim();
-					String[] cmd = str.split(" ");
+				if ((str_buffer=readLine(buffer))!=null) {
+					str_buffer = str_buffer.trim();
+					System.out.println("["+data()+"]"+"Comando arrivato [len="+str_buffer.length()+"]: "+str_buffer);
+					String[] cmd = str_buffer.split(" ");
+					commandOK=true;
 					switch (cmd[0]) {
 						case "validateVersion":
 							validateVersion(cmd);
@@ -165,27 +190,36 @@ public class SocketService extends Thread {
 							break;
 						case "getDomande":
 							getDomande(cmd);
-							break;							
+							break;
+						case "":
 						default:
+							commandOK=false;
 							break;
 					}
+					str_buffer=null;
+					
+					if(commandOK)
+						timer_ping=0;
 				}
 				else {
-					timer_ping += 100;
+					timer_ping += TIME_PING;
+					System.out.println("Incremento il ping: "+timer_ping);
 				}
 			}
 			catch (SocketException e) {
-				logger.severe(e.getMessage());
 				e.printStackTrace();
 				break;
 			}
 			catch (IOException e) {
-				logger.severe(e.getMessage());
 				e.printStackTrace();
 			}
 			
+			System.out.print("["+data()+"]");
+			System.out.println("Current time ping: "+timer_ping+"/"+PING_TIMEOUT);
 			try {
-				Thread.sleep(100L);
+				System.out.print("["+data()+"]");
+				System.out.println("sleep_"+TIME_PING);
+				Thread.sleep(TIME_PING);
 			}
 			catch (InterruptedException e) {
 				e.printStackTrace();
@@ -197,18 +231,21 @@ public class SocketService extends Thread {
 				}
 				break;
 			}
-
+			
 			if (timer_ping > PING_TIMEOUT) {
 				break;
 			}
 		}
-
+		
+		System.out.print("["+data()+"]");
 		if (account != null) {
 			System.out.println("Termine thread: " + account.getUsername());
 			GestionePartite.getInstance().esceUtente(account);
 		}
-		else
+		else {
 			System.out.println("Termine thread connessione");
+		}
+		closeConnection();
 	}
 	
 	private void validateVersion(String[] cmd) throws IOException{
