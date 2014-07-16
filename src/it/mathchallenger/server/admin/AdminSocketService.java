@@ -106,13 +106,16 @@ public class AdminSocketService extends Thread {
 						case "email_reload_properties":
 							email_reload_properties(cmd);
 							break;
+						case "email_debug":
+							email_debug(cmd);
+							break;
 					}
 				}
 				else {
-					timer_ping += 200;
+					timer_ping += 500;
 				}
 			}
-			catch(IOException e){
+			catch(Exception e){
 				try {
 					OutputWrite("generic=error");
 				} 
@@ -130,6 +133,15 @@ public class AdminSocketService extends Thread {
 				break;
 		}
 		System.out.println("Thread admin terminato");
+	}
+	private void email_debug(String[] cmd) throws IOException {
+		if(cmd.length==2 && logged){
+			boolean b=Boolean.parseBoolean(cmd[1]);
+			MailSender.debugStatus(b);
+			OutputWrite("email_debug=OK");
+		}
+		else 
+			OutputWrite("email_debug=error");
 	}
 	private void email_reload_properties(String[] cmd) throws IOException {
 		if(cmd.length==1){

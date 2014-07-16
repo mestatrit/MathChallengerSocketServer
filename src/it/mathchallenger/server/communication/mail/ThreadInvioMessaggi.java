@@ -1,5 +1,7 @@
 package it.mathchallenger.server.communication.mail;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.commons.mail.DefaultAuthenticator;
@@ -12,6 +14,7 @@ import it.mathchallenger.server.tda.Queue;
 
 public class ThreadInvioMessaggi extends Thread {
 	private Queue<Email> codaMessaggi;
+	private boolean debug=false;
 
 	public ThreadInvioMessaggi() {
 		codaMessaggi = new NodeQueue<Email>();
@@ -33,11 +36,20 @@ public class ThreadInvioMessaggi extends Thread {
 					try {
 						System.out.println("Invio email in corso...");
 						mail.send();
+						debug_file_w("email inviata con successo");
 					}
 					catch (Exception e) {
+						if(debug)
+							debug_file_w(e.getMessage());
 						e.printStackTrace();
 						codaMessaggi.enqueue(mail);
 					}
+				}
+				try {
+					sleep(2000L); //2 secondi tra l'invio di ogni mail
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -66,5 +78,19 @@ public class ThreadInvioMessaggi extends Thread {
 		email.setMsg("Thank you for joining us.\nHere are your account details:\n\nUsername: " + username + "\nPassword: " + pass + "\n\n");
 		email.addTo(address);
 		codaMessaggi.enqueue(email);
+	}
+	public void setDebug(boolean b){
+		debug=b;
+	}
+	private void debug_file_w(String s){
+		try {
+			FileWriter fw=new FileWriter("email_debug.log", true);
+			fw.write(s+"\n\n");
+			fw.close();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

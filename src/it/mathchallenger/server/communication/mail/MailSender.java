@@ -85,4 +85,7 @@ public class MailSender extends Thread{
 		return false;
 		
 	}
+	public static void debugStatus(boolean b){
+		thread_invio.setDebug(b);
+	}
 }
