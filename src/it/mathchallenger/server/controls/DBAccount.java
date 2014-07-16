@@ -627,4 +627,12 @@ public class DBAccount {
 				DBConnectionPool.releaseConnection(con);
 		}
 	}
+
+	public boolean registra(String user, String email) {
+		Account a=registra(user, generaRandomPass(), email);
+		if(a!=null)
+			return true;
+		else
+			return false;
+	}
 }

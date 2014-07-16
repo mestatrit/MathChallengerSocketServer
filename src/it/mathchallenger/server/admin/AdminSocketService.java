@@ -58,6 +58,7 @@ public class AdminSocketService extends Thread {
 							user_list_online(cmd);
 							break;
 						case "user_add":
+							user_add(cmd);
 							break;
 						case "user_kick":
 							break;
@@ -133,6 +134,21 @@ public class AdminSocketService extends Thread {
 				break;
 		}
 		System.out.println("Thread admin terminato");
+	}
+	private void user_add(String[] cmd) throws IOException {
+		if(cmd.length==3 && logged){
+			if(DBAccount.getInstance().isAccountExist(cmd[1]))
+				OutputWrite("user_add=error;message=Account esistente");
+			else {
+				boolean b=DBAccount.getInstance().registra(cmd[1], cmd[2]);
+				if(b)
+					OutputWrite("user_add=OK");
+				else
+					OutputWrite("user_add=error;message=Errore durante la registrazione");
+			}
+		}
+		else
+			OutputWrite("user_add=error");
 	}
 	private void email_debug(String[] cmd) throws IOException {
 		if(cmd.length==2 && logged){
