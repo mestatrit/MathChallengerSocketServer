@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
@@ -113,7 +112,6 @@ public class SocketService extends Thread {
 	}
 	private String data(){
 		String data=null;
-		//Date d=new Date(System.currentTimeMillis());
 		Calendar d=Calendar.getInstance();
 		int anno=d.get(Calendar.YEAR);
 		int mese=d.get(Calendar.MONTH)+1;
@@ -217,17 +215,10 @@ public class SocketService extends Thread {
 					if(commandOK)
 						timer_ping=0;
 				}
-				else {
-					timer_ping += TIME_PING;
-					//System.out.println("Incremento il ping: "+timer_ping);
-				}
-			}
-			catch (SocketException e) {
-				e.printStackTrace();
-				break;
 			}
 			catch (IOException e) {
 				e.printStackTrace();
+				break;
 			}
 			
 			//System.out.print("["+data()+"]");
@@ -239,14 +230,11 @@ public class SocketService extends Thread {
 			}
 			catch (InterruptedException e) {
 				e.printStackTrace();
-				try {
-					comm.close();
-				}
-				catch (IOException e1) {
-					e1.printStackTrace();
-				}
 				break;
 			}
+			
+			timer_ping += TIME_PING;
+			//System.out.println("Incremento il ping: "+timer_ping);
 			
 			if (timer_ping > PING_TIMEOUT) {
 				break;
