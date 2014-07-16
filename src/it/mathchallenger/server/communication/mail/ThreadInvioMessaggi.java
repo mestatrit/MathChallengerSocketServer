@@ -1,7 +1,5 @@
 package it.mathchallenger.server.communication.mail;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.commons.mail.DefaultAuthenticator;
@@ -9,6 +7,7 @@ import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 
+import it.mathchallenger.server.admin.ManagerException;
 import it.mathchallenger.server.tda.NodeQueue;
 import it.mathchallenger.server.tda.Queue;
 
@@ -34,13 +33,13 @@ public class ThreadInvioMessaggi extends Thread {
 				Email mail = codaMessaggi.dequeue();
 				if (mail != null) {
 					try {
-						System.out.println("Invio email in corso...");
+						//System.out.println("Invio email in corso...");
 						mail.send();
-						debug_file_w("email inviata con successo");
+						ManagerException.registraEccezione("Email inviata con successo", "email_debug_ok.log");
 					}
 					catch (Exception e) {
 						if(debug)
-							debug_file_w(e.getMessage());
+							debug_file_w(e);
 						e.printStackTrace();
 						codaMessaggi.enqueue(mail);
 					}
@@ -82,15 +81,7 @@ public class ThreadInvioMessaggi extends Thread {
 	public void setDebug(boolean b){
 		debug=b;
 	}
-	private void debug_file_w(String s){
-		try {
-			FileWriter fw=new FileWriter("email_debug.log", true);
-			fw.write(s+"\n\n");
-			fw.close();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+	private void debug_file_w(Exception e){
+		ManagerException.registraEccezione(e, "email_debug.log");
 	}
 }
