@@ -92,6 +92,7 @@ public class AdminSocketService extends Thread {
 							ranking_force_update(cmd);
 							break;
 						case "server_restart":
+							server_restart(cmd);
 							break;
 						case "server_lock_connections":
 							break;
@@ -134,6 +135,14 @@ public class AdminSocketService extends Thread {
 				break;
 		}
 		System.out.println("Thread admin terminato");
+	}
+	private void server_restart(String[] cmd) throws IOException {
+		if(cmd.length==1){
+			OutputWrite("server_restart=OK");
+			System.exit(0);
+		}
+		else
+			OutputWrite("server_restart=error");
 	}
 	private void user_add(String[] cmd) throws IOException {
 		if(cmd.length==3 && logged){
