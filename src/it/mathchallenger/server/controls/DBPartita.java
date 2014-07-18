@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
@@ -19,6 +20,7 @@ public class DBPartita {
 	private static DBPartita manager;
 	private final static String LOG_FILE="DBPartita.log";
 	private Random rand;
+	private DateFormat dateFormat;
 
 	public static synchronized DBPartita getInstance() {
 		if (manager == null) {
@@ -29,6 +31,7 @@ public class DBPartita {
 
 	private DBPartita() {
 		rand=new Random(System.currentTimeMillis());
+		dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	}
 
 	public Partita creaPartita(int id1, Integer id2) {
@@ -334,8 +337,6 @@ public class DBPartita {
 	private Domanda generaDomandaDifficilissima() {
 		return generaDomandaDifficile();
 	}
-
-	private static DateFormat dateFormat;
 
 	private void inserisciPartita(Partita p) {
 		Connection con = null;

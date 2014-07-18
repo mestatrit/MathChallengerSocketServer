@@ -53,7 +53,8 @@ public class Ranking extends Thread {
 		while (true) {
 			ArrayList<EntryClassifica> stat = getRankingFromDB();
 			try {
-				pubblica(stat);
+				if(Boolean.parseBoolean(properties.getProperty("abilita_aggiornamento", "true")))
+					pubblica(stat);
 				try {
 					sleep(Integer.parseInt(properties.getProperty("TIME_SLEEP")));
 				}

@@ -83,6 +83,8 @@ public class AdminSocketService extends Thread {
 						case "version_reload_client_enabled":
 							version_reload_client_enabled(cmd);
 							break;
+						case "ranking_enable_post":
+							break;
 						case "ranking_change_all_values":
 							ranking_change_all_values(cmd);
 							break;
