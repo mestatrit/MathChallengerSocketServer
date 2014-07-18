@@ -314,7 +314,6 @@ public class SocketService extends Thread {
 		if (cmd.length == 3) {
 			if (!client_version_ok){
 				OutputWrite("login=error;message="+ListaErrori.VERSIONE_NON_VALIDA);
-				
 			}
 			
 			if (account != null) {
@@ -405,7 +404,6 @@ public class SocketService extends Thread {
 				else {
 					account = dba.registra(user, pass, email);
 					if (account != null) {
-						GestionePartite.getInstance().entraUtente(account);
 						OutputWrite("register=OK;authcode=" + account.getAuthCode() + ";id=" + account.getID());
 					}
 					else
