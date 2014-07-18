@@ -61,6 +61,7 @@ public class AdminSocketService extends Thread {
 							user_add(cmd);
 							break;
 						case "user_kick":
+							user_kick(cmd);
 							break;
 						case "user_ban":
 							break;
@@ -135,6 +136,18 @@ public class AdminSocketService extends Thread {
 				break;
 		}
 		System.out.println("Thread admin terminato");
+	}
+	private void user_kick(String[] cmd) throws IOException {
+		if(cmd.length==2 && logged){
+			String username=cmd[1];
+			boolean b=GestionePartite.getInstance().kickUser(username);
+			if(b)
+				OutputWrite("user_kick=OK");
+			else
+				OutputWrite("user_kick=error");
+		}
+		else
+			OutputWrite("user_kick=error");
 	}
 	private void server_restart(String[] cmd) throws IOException {
 		if(cmd.length==1){

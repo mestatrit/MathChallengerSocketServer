@@ -1,9 +1,9 @@
 package it.mathchallenger.server.controls;
 
+import it.mathchallenger.server.admin.ManagerException;
 import it.mathchallenger.server.entities.Domanda;
 import it.mathchallenger.server.entities.Partita;
 import it.mathchallenger.server.storage.DBConnectionPool;
-import it.mathchallenger.server.storage.LoggerManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,15 +11,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
-import java.util.logging.Logger;
 
 public class DBPartita {
 	private static DBPartita manager;
-	private static Logger	logger;
+	private final static String LOG_FILE="DBPartita.log";
 	private Random rand;
 
 	public static synchronized DBPartita getInstance() {
@@ -30,8 +28,6 @@ public class DBPartita {
 	}
 
 	private DBPartita() {
-		logger = LoggerManager.newLogger(getClass().getName());
-		dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		rand=new Random(System.currentTimeMillis());
 	}
 
@@ -87,7 +83,7 @@ public class DBPartita {
 			}
 		}
 		catch (SQLException e) {
-			logger.severe(e.getMessage());
+			ManagerException.registraEccezione(e, LOG_FILE);
 		}
 		finally {
 			try {
@@ -196,7 +192,7 @@ public class DBPartita {
 			}
 		}
 		catch (SQLException e) {
-			logger.severe(e.getMessage());
+			ManagerException.registraEccezione(e, LOG_FILE);
 			e.printStackTrace();
 		}
 		finally {
@@ -358,7 +354,7 @@ public class DBPartita {
 			}
 		}
 		catch (SQLException e) {
-			logger.severe(e.getMessage());
+			ManagerException.registraEccezione(e, LOG_FILE);
 			e.printStackTrace();
 		}
 		finally {

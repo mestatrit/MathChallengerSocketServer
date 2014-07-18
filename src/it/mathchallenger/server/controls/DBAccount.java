@@ -9,16 +9,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.Logger;
 
+import it.mathchallenger.server.admin.ManagerException;
 import it.mathchallenger.server.communication.mail.MailSender;
 import it.mathchallenger.server.entities.Account;
 import it.mathchallenger.server.storage.DBConnectionPool;
-import it.mathchallenger.server.storage.LoggerManager;
 
 public class DBAccount {
 	private static DBAccount manager;
-	private static Logger	logger;
+	private final static String LOG_FILE="DBAccount.log";
 
 	private final static int AUTHCODE_SIZE = 64;
 	private final static int PASSWORD_SIZE = 8;
@@ -31,7 +30,6 @@ public class DBAccount {
 	}
 
 	private DBAccount() {
-		logger = LoggerManager.newLogger(getClass().getName());
 	}
 
 	public Account login(String username, String password) {
@@ -55,7 +53,7 @@ public class DBAccount {
 			}
 		}
 		catch (SQLException e) {
-			logger.severe(e.getMessage());
+			ManagerException.registraEccezione(e, LOG_FILE);
 		}
 		finally {
 			try {
@@ -98,8 +96,7 @@ public class DBAccount {
 			return hexString.toString();
 		}
 		catch (NoSuchAlgorithmException e) {
-			logger.severe("Algoritmo SHA-256 non trovato");
-			logger.severe(e.getMessage());
+			ManagerException.registraEccezione(e, LOG_FILE);
 			e.printStackTrace();
 		}
 		return null;
@@ -152,7 +149,7 @@ public class DBAccount {
 			}
 		}
 		catch (SQLException e) {
-			logger.severe(e.getMessage());
+			ManagerException.registraEccezione(e, LOG_FILE);
 		}
 		finally {
 			try {
@@ -246,7 +243,7 @@ public class DBAccount {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
-			logger.severe(e.getMessage());
+			ManagerException.registraEccezione(e, LOG_FILE);
 		}
 		finally {
 			try {

@@ -1,20 +1,16 @@
 package it.mathchallenger.server.controls;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import de.congrace.exp4j.UnknownFunctionException;
 import de.congrace.exp4j.UnparsableExpressionException;
 import it.mathchallenger.server.entities.Domanda;
-import it.mathchallenger.server.storage.LoggerManager;
 
 public class GeneratoreEspressioniFacili extends Risolutore {
 	private static GeneratoreEspressioniFacili generatore;
-	private static Logger					  logger;
 
 	private GeneratoreEspressioniFacili() {
 		super();
-		logger = LoggerManager.newLogger(getClass().getName());
 	}
 
 	public static GeneratoreEspressioniFacili getInstance() {
@@ -76,7 +72,6 @@ public class GeneratoreEspressioniFacili extends Risolutore {
 			risolvi(domanda_d);
 		}
 		catch (UnknownFunctionException | UnparsableExpressionException e) {
-			logger.severe(e.getMessage());
 			e.printStackTrace();
 			return generaDomanda();
 		}
