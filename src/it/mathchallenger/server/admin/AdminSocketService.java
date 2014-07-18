@@ -83,8 +83,6 @@ public class AdminSocketService extends Thread {
 						case "version_reload_client_enabled":
 							version_reload_client_enabled(cmd);
 							break;
-						case "ranking_enable_post":
-							break;
 						case "ranking_change_all_values":
 							ranking_change_all_values(cmd);
 							break;
@@ -243,30 +241,6 @@ public class AdminSocketService extends Thread {
 			OutputWrite("email_change_all_values=error");
 		}
 	}
-	/*
-	private void ranking_change_value(String[] cmd) throws IOException {
-		if(cmd.length==3){
-			if(logged){
-				boolean b=Ranking.getInstance().changeValue(cmd[1], cmd[2]);
-				if(b){
-					if(Ranking.getInstance().saveToFile())
-						OutputWrite("ranking_change_value=OK");
-					else
-						OutputWrite("ranking_change_value=error");
-				}
-				else {
-					OutputWrite("ranking_change_value=error");
-				}
-			}
-			else {
-				OutputWrite("ranking_change_value=error");
-			}
-		}
-		else {
-			OutputWrite("ranking_change_value=error");
-		}
-	}
-	*/
 	private void ranking_force_update(String[] cmd) throws IOException {
 		if(cmd.length==1){
 			if(logged){
