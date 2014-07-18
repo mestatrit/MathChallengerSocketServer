@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class GestionePartite {
@@ -21,17 +22,17 @@ public class GestionePartite {
 		return manager;
 	}
 
-	private ArrayList<Account> utenti_loggati;
+	private HashMap<String, Account> user_map;
 	private ArrayList<Bot>	 bot_list;
 	private ArrayList<Bot>	 b_copy;
 	private Queue<Bot>		 ordine_bot;
 
 	private GestionePartite() {
-		utenti_loggati = new ArrayList<Account>(100);
+		user_map=new HashMap<String, Account>();
 		rand = new Random(System.currentTimeMillis());
+		
 		ordine_bot = new NodeQueue<Bot>();
 		bot_list = new ArrayList<Bot>(20);
-
 		loadBot();
 
 		b_copy = new ArrayList<Bot>(bot_list.size());
@@ -57,14 +58,15 @@ public class GestionePartite {
 		return b;
 	}
 
-	public void entraUtente(Account acc) {
-		if (acc != null)
-			utenti_loggati.add(acc);
+	public void entraUtente(Account acc) {		
+		if(acc!=null && !user_map.containsKey(acc.getUsername())){
+			user_map.put(acc.getUsername(), acc);
+		}
 	}
 
 	public void esceUtente(Account acc) {
-		if (acc != null)
-			utenti_loggati.remove(acc);
+		if(acc!=null)
+			user_map.remove(acc.getUsername());
 	}
 
 	public Bot getBotByID(int id) {
@@ -82,25 +84,30 @@ public class GestionePartite {
 	private static Random rand;
 
 	public Account accountRandom(int id_ricercante, ArrayList<Account> last) {
-		if (utenti_loggati.size() <= 1) { // l'utente loggato è l'utente che
-										  // cerca
+		if (user_map.size() <= 1) { // l'utente loggato è l'utente che cerca
 			return getBotRandom();
 		}
 		else {
 			int prove = 0;
+			Object[] accs=user_map.values().toArray();
 			while (prove < 5) {
-				int acc_ind = rand.nextInt(utenti_loggati.size());
-				if(acc_ind<utenti_loggati.size()){
-    				Account acc = utenti_loggati.get(acc_ind);
-    				if (acc.getID() != id_ricercante && !isInLastUsers(acc.getID(), last))
+				int acc_ind = rand.nextInt(accs.length);
+				if(acc_ind<accs.length){
+    				Account acc = (Account) accs[acc_ind];
+    				if (acc.getID() != id_ricercante && !isInLastUsers(acc.getID(), last)){
+    					accs=null;
     					return acc;
     				}
+    			}
 				prove++;
 			}
+			accs=null;
 			return getBotRandom();
 		}
 	}
 	private boolean isInLastUsers(int id, ArrayList<Account> list){
+		if(list==null)
+			return false;
 		for(int i=0;i<list.size();i++)
 			if(list.get(i).getID()==id)
 				return true;
@@ -150,6 +157,16 @@ public class GestionePartite {
 		}
 	}
 	public ArrayList<Account> listUsers(){
-		return utenti_loggati;
+		ArrayList<Account> l=new ArrayList<Account>(user_map.size());
+		Object[] la=user_map.values().toArray();
+		for(int i=0;i<la.length;i++)
+			l.add((Account) la[i]);
+		la=null;
+		
+		return l;
+	}
+	public boolean kickUser(String utente){
+		Account acc=user_map.remove(utente);
+		return acc!=null;
 	}
 }

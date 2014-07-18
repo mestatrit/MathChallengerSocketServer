@@ -404,6 +404,7 @@ public class SocketService extends Thread {
 				else {
 					account = dba.registra(user, pass, email);
 					if (account != null) {
+						GestionePartite.getInstance().entraUtente(account);
 						OutputWrite("register=OK;authcode=" + account.getAuthCode() + ";id=" + account.getID());
 					}
 					else
