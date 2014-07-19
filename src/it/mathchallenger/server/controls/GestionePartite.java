@@ -22,13 +22,13 @@ public class GestionePartite {
 		return manager;
 	}
 
-	private HashMap<String, Account> user_map;
+	private HashMap<String, AccountWrapper> user_map;
 	private ArrayList<Bot>	 bot_list;
 	private ArrayList<Bot>	 b_copy;
 	private Queue<Bot>		 ordine_bot;
 
 	private GestionePartite() {
-		user_map=new HashMap<String, Account>();
+		user_map=new HashMap<String, AccountWrapper>();
 		rand = new Random(System.currentTimeMillis());
 		
 		ordine_bot = new NodeQueue<Bot>();
@@ -59,14 +59,21 @@ public class GestionePartite {
 	}
 
 	public void entraUtente(Account acc) {		
-		if(acc!=null && !user_map.containsKey(acc.getUsername())){
-			user_map.put(acc.getUsername(), acc);
+		AccountWrapper aw=user_map.get(acc.getUsername());
+		if(aw==null){
+			aw=new AccountWrapper(acc);
+			user_map.put(acc.getUsername(), aw);
 		}
+		aw.increaseCount();
 	}
 
 	public void esceUtente(Account acc) {
-		if(acc!=null)
-			user_map.remove(acc.getUsername());
+		AccountWrapper a=user_map.get(acc.getUsername());
+		if(a!=null){
+			a.decreaseCount();
+			if(a.getCount()<=0)
+				user_map.remove(acc.getUsername());
+		}
 	}
 
 	public Bot getBotByID(int id) {
@@ -93,7 +100,7 @@ public class GestionePartite {
 			while (prove < 5) {
 				int acc_ind = rand.nextInt(accs.length);
 				if(acc_ind<accs.length){
-    				Account acc = (Account) accs[acc_ind];
+    				Account acc = ((AccountWrapper) accs[acc_ind]).getAccount();
     				if (acc.getID() != id_ricercante && !isInLastUsers(acc.getID(), last)){
     					accs=null;
     					return acc;
@@ -160,13 +167,34 @@ public class GestionePartite {
 		ArrayList<Account> l=new ArrayList<Account>(user_map.size());
 		Object[] la=user_map.values().toArray();
 		for(int i=0;i<la.length;i++)
-			l.add((Account) la[i]);
+			l.add(((AccountWrapper) la[i]).getAccount());
 		la=null;
 		
 		return l;
 	}
 	public boolean kickUser(String utente){
-		Account acc=user_map.remove(utente);
+		AccountWrapper acc=user_map.remove(utente);
 		return acc!=null;
+	}
+}
+class AccountWrapper {
+	private Account acc;
+	private int count;
+	
+	public AccountWrapper(Account a){
+		acc=a;
+		count=0;
+	}
+	public int getCount(){
+		return count;
+	}
+	public Account getAccount(){
+		return acc;
+	}
+	public void increaseCount(){
+		count++;
+	}
+	public void decreaseCount(){
+		count--;
 	}
 }
