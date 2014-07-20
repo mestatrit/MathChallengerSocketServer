@@ -58,7 +58,7 @@ public class GestionePartite {
 		return b;
 	}
 
-	public void entraUtente(Account acc) {		
+	public synchronized void entraUtente(Account acc) {		
 		AccountWrapper aw=user_map.get(acc.getUsername());
 		if(aw==null){
 			aw=new AccountWrapper(acc);
@@ -67,7 +67,7 @@ public class GestionePartite {
 		aw.increaseCount();
 	}
 
-	public void esceUtente(Account acc) {
+	public synchronized void esceUtente(Account acc) {
 		AccountWrapper a=user_map.get(acc.getUsername());
 		if(a!=null){
 			a.decreaseCount();
@@ -96,7 +96,10 @@ public class GestionePartite {
 		}
 		else {
 			int prove = 0;
-			Object[] accs=user_map.values().toArray();
+			Object[] accs;
+			synchronized (user_map) {
+				accs=user_map.values().toArray();
+			}
 			while (prove < 5) {
 				int acc_ind = rand.nextInt(accs.length);
 				if(acc_ind<accs.length){
@@ -165,7 +168,10 @@ public class GestionePartite {
 	}
 	public ArrayList<Account> listUsers(){
 		ArrayList<Account> l=new ArrayList<Account>(user_map.size());
-		Object[] la=user_map.values().toArray();
+		Object[] la;
+		synchronized (user_map) {
+			la=user_map.values().toArray();
+		}
 		for(int i=0;i<la.length;i++)
 			l.add(((AccountWrapper) la[i]).getAccount());
 		la=null;

@@ -35,6 +35,7 @@ public class SocketService extends Thread {
 	private String str_buffer;
 	
 	private final static int LIST_LAST_USER_SIZE=5;
+	private static final long TIME_KEEP_USER_VISIBLE = 30 * 60 * 1000; //30 minuti
 	private ArrayList<Account> ultime_partite;
 
 	public SocketService(Socket com) {
@@ -244,12 +245,21 @@ public class SocketService extends Thread {
 		System.out.print("["+data()+"]");
 		if (account != null) {
 			System.out.println("Termine thread: " + account.getUsername());
-			GestionePartite.getInstance().esceUtente(account);
+			//GestionePartite.getInstance().esceUtente(account);
 		}
 		else {
 			System.out.println("Termine thread connessione");
 		}
 		closeConnection();
+		if(account!=null){
+			try {
+				sleep(TIME_KEEP_USER_VISIBLE);
+			} 
+			catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			GestionePartite.getInstance().esceUtente(account);
+		}
 	}
 	
 	private void validateVersion(String[] cmd) throws IOException{
@@ -278,7 +288,7 @@ public class SocketService extends Thread {
 			}
 			else {
 				OutputWrite("exit=OK");
-				GestionePartite.getInstance().esceUtente(account);
+				//GestionePartite.getInstance().esceUtente(account);
 				closeConnection();
 			}
 		}
@@ -344,7 +354,8 @@ public class SocketService extends Thread {
 			}
 			else {
 				GestionePartite.getInstance().esceUtente(account);
-				boolean logout = DBAccount.getInstance().logout(account.getUsername(), account.getAuthCode());
+				/*boolean logout = */DBAccount.getInstance().logout(account.getUsername(), account.getAuthCode());
+				/*
 				if (logout) {
 					GestionePartite.getInstance().esceUtente(account);
 					OutputWrite("logout=OK");
@@ -352,6 +363,9 @@ public class SocketService extends Thread {
 				}
 				else
 					OutputWrite("logout=error");
+				*/
+				OutputWrite("logout=OK");
+				closeConnection();
 			}
 		}
 		else
