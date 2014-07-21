@@ -52,6 +52,7 @@ public class SocketService extends Thread {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+		ConnectionsCount.connectionEnabled();
 	}
 	
 	private boolean closeConnection() {
@@ -67,6 +68,7 @@ public class SocketService extends Thread {
 				ultime_partite.clear();
 			ultime_partite=null;
 			rand=null;
+			ConnectionsCount.connectionClosed();
 			return true;
 		}
 		catch (IOException e) {

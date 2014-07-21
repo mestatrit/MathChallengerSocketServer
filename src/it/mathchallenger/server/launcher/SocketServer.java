@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 
 public class SocketServer {
-	public static ThreadGroup   thread_utenti_attivi = new ThreadGroup("t_utenti_attivi");
+	private static ThreadGroup   thread_utenti_attivi = new ThreadGroup("t_utenti_attivi");
 	private static ServerSocket server			   = null;
 	private static MailSender mailsender = null;
 	private static Ranking ranking;

@@ -1,11 +1,11 @@
 package it.mathchallenger.server.admin;
 
+import it.mathchallenger.server.communication.ConnectionsCount;
 import it.mathchallenger.server.communication.mail.MailSender;
 import it.mathchallenger.server.controls.DBAccount;
 import it.mathchallenger.server.controls.GestionePartite;
 import it.mathchallenger.server.controls.ranking.Ranking;
 import it.mathchallenger.server.controls.version.VersionCheck;
-import it.mathchallenger.server.launcher.SocketServer;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -409,7 +409,7 @@ public class AdminSocketService extends Thread {
 			}
 			else {
 				ArrayList<String> list=GestionePartite.getInstance().listUsers();
-				StringBuilder resp=new StringBuilder("user_list_online=OK;client_attivi="+SocketServer.thread_utenti_attivi.activeCount()+";loggati="+list.size());
+				StringBuilder resp=new StringBuilder("user_list_online=OK;client_attivi="+ConnectionsCount.getConnectionsAlive()+";loggati="+list.size());
 				for(int i=0;i<list.size();i++){
 					resp.append(";utente="+list.get(i));
 				}
