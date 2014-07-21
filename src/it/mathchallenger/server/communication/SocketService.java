@@ -35,7 +35,7 @@ public class SocketService extends Thread {
 	private String str_buffer;
 	
 	private final static int LIST_LAST_USER_SIZE=5;
-	private static final long TIME_KEEP_USER_VISIBLE = 30 * 60 * 1000; //30 minuti
+	public static final long TIME_KEEP_USER_VISIBLE = 30 * 60 * 1000; //30 minuti
 	private ArrayList<Account> ultime_partite;
 
 	public SocketService(Socket com) {
@@ -66,7 +66,6 @@ public class SocketService extends Thread {
 			if(ultime_partite!=null)
 				ultime_partite.clear();
 			ultime_partite=null;
-			account=null;
 			rand=null;
 			return true;
 		}
@@ -252,13 +251,8 @@ public class SocketService extends Thread {
 		}
 		closeConnection();
 		if(account!=null){
-			try {
-				sleep(TIME_KEEP_USER_VISIBLE);
-			} 
-			catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			GestionePartite.getInstance().esceUtente(account);
+			Thread t = new ThreadQuit(account);
+			t.start();
 		}
 	}
 	
@@ -739,5 +733,25 @@ public class SocketService extends Thread {
 		}
 		else
 			OutputWrite("getDomande=error;message=Usage: getDomande id_partita");
+	}
+}
+class ThreadQuit extends Thread {
+	private Account acc;
+	public ThreadQuit(Account a){
+		acc=a;
+	}
+	public void run() {
+		//System.out.println("ThreadQuit avviato");
+		try {
+			//System.out.println("ThreadQuit sleeping");
+			sleep(SocketService.TIME_KEEP_USER_VISIBLE);
+			//System.out.println("ThreadQuit sleep end");
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		GestionePartite.getInstance().esceUtente(acc);
+		//System.out.println("ThreadQuit - Esce "+acc.getUsername());
+		acc=null;
 	}
 }

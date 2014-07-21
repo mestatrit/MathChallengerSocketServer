@@ -166,14 +166,16 @@ public class GestionePartite {
 			t_bot.start();
 		}
 	}
-	public ArrayList<Account> listUsers(){
-		ArrayList<Account> l=new ArrayList<Account>(user_map.size());
+	public ArrayList<String> listUsers(){
+		ArrayList<String> l=new ArrayList<String>(user_map.size());
 		Object[] la;
 		synchronized (user_map) {
 			la=user_map.values().toArray();
 		}
-		for(int i=0;i<la.length;i++)
-			l.add(((AccountWrapper) la[i]).getAccount());
+		for(int i=0;i<la.length;i++){
+			AccountWrapper a=(AccountWrapper) la[i];
+			l.add(a.getAccount().getUsername()+","+a.getAccount().getID()+","+a.getCount());
+		}
 		la=null;
 		
 		return l;

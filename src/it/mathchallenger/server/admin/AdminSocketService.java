@@ -5,7 +5,6 @@ import it.mathchallenger.server.controls.DBAccount;
 import it.mathchallenger.server.controls.GestionePartite;
 import it.mathchallenger.server.controls.ranking.Ranking;
 import it.mathchallenger.server.controls.version.VersionCheck;
-import it.mathchallenger.server.entities.Account;
 import it.mathchallenger.server.launcher.SocketServer;
 
 import java.io.BufferedReader;
@@ -119,12 +118,7 @@ public class AdminSocketService extends Thread {
 				}
 			}
 			catch(Exception e){
-				try {
-					OutputWrite("generic=error");
-				} 
-				catch (IOException e1) {
-					e1.printStackTrace();
-				}
+				break;
 			}
 			try {
 				sleep(200);
@@ -136,6 +130,13 @@ public class AdminSocketService extends Thread {
 				break;
 		}
 		System.out.println("Thread admin terminato");
+		if(!comm.isClosed())
+			try {
+				comm.close();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
 	private void user_kick(String[] cmd) throws IOException {
 		if(cmd.length==2 && logged){
@@ -407,10 +408,10 @@ public class AdminSocketService extends Thread {
 				OutputWrite("user_list_online=error;message=Non sei loggato");
 			}
 			else {
-				ArrayList<Account> list=GestionePartite.getInstance().listUsers();
+				ArrayList<String> list=GestionePartite.getInstance().listUsers();
 				StringBuilder resp=new StringBuilder("user_list_online=OK;client_attivi="+SocketServer.thread_utenti_attivi.activeCount()+";loggati="+list.size());
 				for(int i=0;i<list.size();i++){
-					resp.append(";utente="+list.get(i).getUsername()+","+list.get(i).getID());
+					resp.append(";utente="+list.get(i));
 				}
 				OutputWrite(resp.toString());
 			}
